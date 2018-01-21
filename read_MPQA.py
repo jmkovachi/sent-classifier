@@ -13,7 +13,6 @@ from collections import Counter
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
-#print(os.listdir('/home/jmkovachi/market-sent-analysis/database.mpqa.3.0/gate_anns'))
 class extract_MPQA:
     
     def build_BOW(self, file_path):
@@ -70,7 +69,13 @@ class extract_MPQA:
         return pol_list, sent_list
         
     
-    
+    """
+    Builds the dictionary of counts for each word in a given class.
+    @pol_list: A list of MPQA tagged polarity documents
+    @sent_list: A list of MQPA tagged sentiment documents. Similar to pol_list,
+    but separated to avoid confusion. This will take the union of both lists.
+    return: A counter dictionary of positive, negative, and neutral sentiments
+    """
     def build_counts(self, pol_list, sent_list):
         wordnet_lemmatizer = WordNetLemmatizer()
         cnt_pos = Counter()
@@ -79,19 +84,17 @@ class extract_MPQA:
         pol_list.extend(sent_list)
         stops = set(stopwords.words('english'))
         for pol in pol_list:
-            #print(pol[1])
-
             pos = [wordnet_lemmatizer.lemmatize(x) for x in pol[0].split(' ') 
                     if (pol[1] == 'positive' or pol[1] == 'uncertain-positive' 
                         or pol[1] == 'both' or pol[1] == 'sentiment-pos') 
-                    and x not in stops]
+                        and x not in stops]
             neg = [wordnet_lemmatizer.lemmatize(x) for x in pol[0].split(' ') 
                     if (pol[1] == 'negative' or pol[1] == 'uncertain-negative' 
                         or pol[1] == 'both' or pol[1] == 'sentiment-neg') 
-                    and x not in stops] 
+                        and x not in stops] 
             neu = [wordnet_lemmatizer.lemmatize(x) for x in pol[0].split(' ') 
                     if (pol[1] == 'neutral')
-                    and x not in stops] 
+                        and x not in stops] 
             
             for word in pos:
                 cnt_pos[word] += 1
@@ -101,47 +104,11 @@ class extract_MPQA:
                 cnt_neu[word] += 1
         return cnt_pos, cnt_neg, cnt_neu
     
-    def count(self, pol_dict):
+    @staticmethod
+    def count(pol_dict):
         count = 0
         for entry in pol_dict:
-            count += entry
+            count += int(pol_dict[entry])
         return count
    
-MPQA = extract_MPQA()
 
-
-pol_list, sent_list = MPQA.build_BOW('/home/jmkovachi/sent-classifier/database.mpqa.3.0/gate_anns')
-
-
-#print(pol_list)
-#print(sent_list)
-pos, neg, neu = MPQA.build_counts(pol_list,sent_list)
-
-print(neg)
-
-wordnet_lemmatizer = WordNetLemmatizer()
-
-print(wordnet_lemmatizer.lemmatize('supported'))
-"""
-    
-print(len(final_str))          
-
-print(count_errors)
-
-print(len(final_str.split('\n')))
-
-write_file = open('lexicon.txt','w')
-write_file.write(final_str)
-write_file.close()
-
-write_file2 = open('lexicon2.txt','w')
-write_file2.write(final_str2)
-write_file2.close()
-
-
-print(len(final_str2))          
-
-
-print(len(final_str2.split('\n')))
-
-"""

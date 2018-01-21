@@ -8,16 +8,18 @@ Created on Sat Jan 20 19:27:44 2018
 
 from read_MPQA import extract_MPQA as MPQA
 import math
+from nltk.stem import WordNetLemmatizer
 
 class MN_NaiveBayes:
     
-    
+    """
+    Constructor for MN_NaiveBayes. 
+    """
     def __init__(self, pos, neg, neutral):
         self.pos_count = MPQA.count(pos)
         self.neg_count = MPQA.count(neg)
         self.neu_count = MPQA.count(neutral)
         self.doc_count = self.pos_count + self.neg_count + self.neu_count
-        self.key_dict = {x for x in pos.update(neg).update(neutral)}
         self.pos = pos
         self.neg = neg
         self.neutral = neutral
@@ -48,6 +50,8 @@ class MN_NaiveBayes:
                                             /(self.neu_count + self.doc_count))
         
     def test(self,document):
+        wordnet_lemmatizer = WordNetLemmatizer()
+        document = [wordnet_lemmatizer.lemmatize(x) for x in document.split(" ")]
         pos_val = self.priorLogPos
         smooth_pos = math.log(1/(self.pos_count + self.doc_count))
         neg_val = self.priorLogNeg
@@ -59,20 +63,21 @@ class MN_NaiveBayes:
                 for word in document:
                     if word in self.features['posFeatures']:
                         pos_val += self.features['posFeatures'][word]
-                    elif word in self.key_dict:
+                    elif word in self.features['negFeatures'] or self.features['neutralFeatures']:
                         pos_val += smooth_pos
             elif feature == 'negFeatures':
                 for word in document:
                     if word in self.features['negFeatures']:
                         neg_val += self.features['negFeatures'][word]
-                    elif word in self.key_dict:
+                    elif word in self.features['posFeatures'] or self.features['neutralFeatures']:
                         neg_val += smooth_neg
             elif feature == 'neutralFeatures':
                 for word in document:
                     if word in self.features['neutralFeatures']:
                         neutral_val += self.features['neutralFeatures'][word]
-                    elif word in self.key_dict:
+                    elif word in self.features['posFeatures'] or self.features['negFeatures']:
                         neutral_val += smooth_neutral
+        
         
         if pos_val > neg_val and pos_val > neutral_val:
             return ('positive', pos_val)
@@ -83,8 +88,17 @@ class MN_NaiveBayes:
         else:
             return ('positive', pos_val)
                     
+mpqa = MPQA()
 
+pol_list, sent_list = mpqa.build_BOW(file_path='/home/jmkovachi/sent-classifier/database.mpqa.3.0/gate_anns')
 
-        
+pos, neg, neutral = mpqa.build_counts(pol_list, sent_list)
+  
+print(neg)      
+NB = MN_NaiveBayes(pos, neg, neutral)
+
+NB.train()
+
+print(NB.test('He urged and supported him on his journey'))
         
         
