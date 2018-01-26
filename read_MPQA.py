@@ -64,7 +64,7 @@ class extract_MPQA:
                                    
         
             except Exception as e:
-                print(str(e) + " " + str(count))
+                #print(str(e) + " " + str(count))
                 continue
         return pol_list, sent_list
         
@@ -85,11 +85,11 @@ class extract_MPQA:
         stops = set(stopwords.words('english'))
         for pol in pol_list:
             pos = [wordnet_lemmatizer.lemmatize(x) for x in pol[0].split(' ') 
-                    if (pol[1] == 'positive' or pol[1] == 'uncertain-positive' 
+                    if (pol[1] == 'positive' #or pol[1] == 'uncertain-positive' 
                         or pol[1] == 'both' or pol[1] == 'sentiment-pos') 
                         and x not in stops]
             neg = [wordnet_lemmatizer.lemmatize(x) for x in pol[0].split(' ') 
-                    if (pol[1] == 'negative' or pol[1] == 'uncertain-negative' 
+                    if (pol[1] == 'negative' #or pol[1] == 'uncertain-negative' 
                         or pol[1] == 'both' or pol[1] == 'sentiment-neg') 
                         and x not in stops] 
             neu = [wordnet_lemmatizer.lemmatize(x) for x in pol[0].split(' ') 

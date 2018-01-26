@@ -10,6 +10,8 @@ for i in nyt_paper.articles:
     i.download()
     i.parse()
     print(i.text)
+    
+
 #article = cnn_paper.articles[0]
 
 

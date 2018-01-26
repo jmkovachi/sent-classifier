@@ -1,0 +1,734 @@
+
+//Below are the counts of positive and negative words
+//The available vocabulary is not large, and probably not good enough to use
+
+Positive words: Counter({'support': 35, 'hope': 25, 'want': 24, 'called': 21, 'calling': 15, 'call': 14, 'supported': 13, 'better': 11, 'would': 11, 'urged': 10, 'demand': 10, 'respect': 9, 'welcome': 8, 'praised': 8, 'said': 7, 'wish': 7, 'seek': 7, '"': 6, 'congratulation': 6, 'advocate': 6, 'wanted': 6, 'agreed': 6, 'happy': 6, 'far': 5, 'demonstration': 5, 'positive': 5, 'pleased': 5, 'free': 5, 'committed': 5, 'legitimate': 5, 'expressed': 5, 'encourage': 4, 'furiously': 4, 'encouraged': 4, 'giving': 4, 'still': 4, 'major': 4, 'readiness': 4, 'recommendation': 4, 'promised': 4, 'quite': 4, 'urging': 4, 'like': 4, 'hoped': 4, 'congratulated': 4, 'high': 4, 'belief': 4, 'good': 4, 'fair': 4, 'confidence': 4, 'defended': 4, 'say': 4, 'supporter': 4, 'desire': 4, 'value': 4, 'interest': 3, 'demanded': 3, 'generally': 3, 'asked': 3, 'strong': 3, 'welcomed': 3, 'described': 3, 'considers': 3, 'lost': 3, 'success': 3, 'found': 3, 'upon': 3, 'remains': 3, 'message': 3, 'request': 3, 'commended': 3, 'wait': 3, 'considered': 3, 'respected': 3, 'greater': 3, 'endorsement': 3, 'seeking': 3, 'approve': 3, 'friend': 3, 'promote': 3, "couldn't": 3, 'ambitious': 3, 'proposal': 3, 'may': 3, 'uphold': 3, 'preference': 3, 'first': 3, 'contrary': 3, 'celebrate': 2, 'trust': 2, 'sensible': 2, 'appetite': 2, 'congratulates': 2, 'right': 2, 'statement': 2, 'honor': 2, 'sought': 2, 'appreciates': 2, 'well': 2, 'strongly': 2, 'think': 2, 'bodes': 2, 'produce': 2, 'pushed': 2, 'expectation': 2, 'clear': 2, 'responding': 2, 'give': 2, 'matter': 2, 'versus': 2, 'promoted': 2, 'hopeful': 2, 'audacious': 2, 'thanks': 2, 'strengthening': 2, 'mr': 2, 'impressed': 2, 'pronouncement': 2, 'looking': 2, 'claim': 2, 'defensively': 2, 'intention': 2, 'proven': 2, 'ask': 2, 'prefer': 2, 'stick': 2, 'lobbied': 2, 'approves': 2, 'cheered': 2, 'somewhat': 2, 'care': 2, 'direction': 2, 'exalted': 2, 'accepted': 2, 'see': 2, 'approved': 2, 'favor': 2, 'way': 2, 'civilized': 2, 'popular': 2, 'bring': 2, 'importance': 2, 'seen': 2, 'much': 2, 'nevertheless': 2, 'happiness': 2, 'come': 2, 'esteem': 2, 'champion': 2, 'seems': 2, 'invited': 2, 'fully': 2, 'green': 2, 'peace': 2, 'necessary': 2, 'decide': 2, 'celebrated': 2, 'u': 2, 'became': 2, 'pride': 2, 'plan': 2, 'optimistic': 2, 'agreeing': 2, 'respectful': 2, 'partially': 2, 'excellent': 2, 'lobby': 2, 'observing': 2, 'grand': 2, 'time': 2, 'bringing': 2, 'smiling': 2, 'demanding': 2, 'light': 2, 'struggled': 2, 'wwanted': 2, 'feel': 2, 'conceived': 2, 'little': 2, 'raised': 2, 'friendly': 2, 'new': 2, 'object': 2, 'content': 2, 'h': 2, 'defends': 2, 'expected': 2, 'favored': 2, '"like': 2, 'quietly': 2, 'spirit': 2, 'mutual': 2, 'fundamental': 2, 'authoritative': 2, 'frank': 2, 'best': 2, 'commend': 2, 'could': 2, 'advancing': 2, 'lobbying': 2, 'credible': 2, 'sympathy': 2, 'jubilant': 2, 'defense': 2, 'wished': 2, 'supporting': 2, 'transparent': 2, 'thanked': 2, 'satisfied': 2, 'moral': 2, 'sent': 2, 'endorsed': 2, 'ever-improving': 2, 'saying': 1, 'contrast': 1, 'leader': 1, 'development': 1, 'order': 1, 'ardor': 1, 'chavez': 1, 'championing': 1, '13': 1, 'willing': 1, 'dominant': 1, 'general': 1, 'ease': 1, "africa's": 1, 'dawn': 1, 'requested': 1, 'brought': 1, 'planning': 1, 'supremacy': 1, 'people': 1, 'frightening': 1, 'refuse': 1, 'bad': 1, 'word': 1, 'democracy': 1, 'asks': 1, 'strategic': 1, 'point': 1, 'declared': 1, 'today,': 1, 'problem': 1, 'well-planned': 1, 'persuade': 1, 'commitment': 1, 'worried': 1, 'eagerly': 1, 'poor': 1, 'stressed': 1, 'anti-democractic': 1, '``': 1, 'dialogue': 1, 'describe': 1, 'nominated': 1, 'press': 1, 'progress': 1, 'smile': 1, 'went': 1, 'view': 1, 'intends': 1, 'open': 1, 'suited': 1, 'testimony': 1, 'guaranteed': 1, 'passed': 1, 'respecting': 1, 'played': 1, 'true': 1, 'wide': 1, 'opting': 1, 'consider': 1, 'fortunately': 1, 'universal': 1, 'protection': 1, 'dry': 1, 'growing': 1, 'pretty': 1, 'warm': 1, 'study': 1, 'practice': 1, 'pressing': 1, 'protecting': 1, 'built': 1, 'bottom': 1, 'objectively': 1, 'human': 1, 'unorthodoxy': 1, 'ratify': 1, 'turning': 1, 'going': 1, 'solidarity': 1, 'better-run': 1, 'assurance': 1, 'satisfaction': 1, 'deep': 1, 'collapsed': 1, 'loudly': 1, 'relevant': 1, 'awaited': 1, 'one': 1, '27': 1, 'orthodoxy': 1, 'least': 1, 'new,': 1, 'relevance': 1, 'inclination': 1, 'agreement': 1, 'defenceless': 1, 'assume': 1, 'strength': 1, 'ready': 1, 'religion': 1, 'signed': 1, 'special': 1, 'historic': 1, 'fight': 1, 'opening': 1, 'acquires': 1, 'including': 1, 'hard': 1, 'credible,': 1, 'disagree': 1, 'unveiled': 1, 'follows': 1, 'succeed': 1, 'appropriate': 1, 'collapse': 1, 'clearly': 1, 'deserved': 1, 'many': 1, 'exclaimed': 1, 'peaceful': 1, 'concerted': 1, 'public': 1, 'forcibly': 1, 'lead': 1, 'yardstick': 1, 'constitutionally': 1, 'hailed': 1, 'concluded': 1, 'build': 1, 'evil': 1, 'appeal': 1, 'political': 1, 'help': 1, 'anxious': 1, 'honest': 1, 'revolutionary': 1, 'served': 1, 'restore': 1, 'defenseless,': 1, 'evenhanded': 1, 'voted': 1, 'stress': 1, 'expand': 1, 'added': 1, 'preservation': 1, 'steer': 1, 'enshrined': 1, 'rather': 1, 'voluntary': 1, 'save': 1, 'humanely': 1, 'insist': 1, 'show': 1, 'beneficial': 1, 'brilliant': 1, 'deepening': 1, 'bright': 1, 'carrot': 1, 'concrete': 1, 'desperate': 1, 'initiated': 1, 'frantic': 1, 'independent': 1, 'abating': 1, 'restraint': 1, 'objective': 1, 'adopts': 1, 'enlightened': 1, 'secretly': 1, 'flawlessly': 1, 'potential': 1, 'tangible': 1, 'victory': 1, 'door': 1, 'benefit': 1, 'withdrawal': 1, 'quiet': 1, 'improved': 1, 'defend': 1, 'able': 1, 'pressure': 1, 'jesus': 1, 'inclined': 1, 'closest': 1, 'important': 1, 'bigger': 1, 'appeared': 1, 'tremendously': 1, 'deviate': 1, 'space': 1, 'performed': 1, 'compromising': 1, 'cost-effective': 1, 'justify': 1, 'legitimacy': 1, 'enemy': 1, 'innocent': 1, 'world': 1, 'determination': 1, 'justice': 1, 'staunch': 1, 'uplift': 1, 'certain': 1, 'acceptable': 1, 'toward': 1, 'sharp': 1, 'flexibility': 1, 'honoring': 1, 'justified': 1, 'adopt': 1, 'achieving': 1, 'beautiful': 1, 'compels': 1, 'understandable': 1, 'idea': 1, 'logical': 1, 'recognise': 1, 'neat': 1, 'announced': 1, 'country': 1, 'agrees': 1, 'intend': 1, 'spoke': 1, 'hastened': 1, 'unity': 1, 'therefore': 1, 'ally': 1, 'power': 1, 'persisted': 1, 'initially': 1, 'heal': 1, 'fraction': 1, 'courageous': 1, 'insisted': 1, 'environmental': 1, 'appealed': 1, 'opinion': 1, 'assure': 1, 'transparent,': 1})
+Negative words: Counter({'concern': 37, 'said': 31, 'criticism': 27, 'would': 25, '"': 21, 'rejected': 20, 'want': 19, 'condemned': 16, 'fear': 15, 'accused': 15, 'one': 14, 'criticized': 14, 'opposition': 13, "don't": 13, 'threat': 12, 'concerned': 11, 'protest': 11, 'flawed': 10, 'charge': 10, 'called': 10, 'made': 9, 'so-called': 9, 'criticizing': 9, 'take': 9, 'widespread': 9, 'plotting': 8, 'feel': 8, 'warned': 8, 'criticizes': 8, 'accuses': 8, 'expressed': 8, 'right': 7, 'strongly': 7, 'think': 7, 'blaming': 7, 'refused': 7, 'blamed': 7, 'even': 7, 'support': 6, 'attacked': 6, 'dismissed': 6, 'outcry': 6, 'axis': 6, 'denied': 6, 'saying': 6, 'worst': 6, 'inaccurate': 6, 'clearly': 6, 'say': 6, 'swift': 6, 'yet': 6, 'questioned': 6, 'reject': 6, 'never': 6, 'opposed': 6, 'dissatisfaction': 6, 'punish': 6, 'denounced': 6, 'disapproves': 6, 'wrote': 6, 'believe': 5, 'serious': 5, 'recognize': 5, 'human': 5, 'cannot': 5, 'might': 5, 'objected': 5, 'accusation': 5, 'irked': 5, 'poor': 5, 'give': 5, 'country': 5, 'despite': 5, 'unwarranted': 5, 'protesting': 5, 'claim': 5, 'happy': 5, 'telling': 5, 'insulting': 5, 'instead': 5, 'rule': 5, 'fails': 5, 'threatened': 5, 'denounce': 5, 'little': 5, 'sharply': 5, 'feeling': 5, 'put': 5, 'rigged': 4, 'decided': 4, 'challenge': 4, 'aggressive': 4, 'slander': 4, 'unacceptable': 4, 'also': 4, 'good': 4, 'still': 4, 'constant': 4, 'striking': 4, 'without': 4, 'discontent': 4, 'protested': 4, 'alleged': 4, 'slammed': 4, 'scorn': 4, 'use': 4, 'vote': 4, 'denounces': 4, 'reckless': 4, 'calling': 4, 'simply': 4, 'tear': 4, 'immediately': 4, 'forcibly': 4, 'disapprove': 4, 'object': 4, 'though': 4, 'empty': 4, 'charged': 4, 'last': 4, 'rhetoric': 4, 'allegation': 4, 'worry': 4, 'main': 4, 'alarming': 4, 'completely': 4, 'major': 4, 'declaring': 4, 'furiously': 4, 'uncertainty': 3, 'fire': 3, 'aimed': 3, 'denouncing': 3, 'far': 3, 'come': 3, 'particularly': 3, 'dangerous': 3, 'world': 3, 'value': 3, 'ridiculing': 3, 'fearing': 3, 'summarily': 3, 'charging': 3, 'terrorist': 3, 'dismisses': 3, 'angry': 3, 'effort': 3, 'false': 3, 'invoking': 3, 'u': 3, 'supported': 3, '"surprised,': 3, 'shameful': 3, 'frustrated': 3, 'intimidation': 3, 'pent-up': 3, 'baseless': 3, 'remained': 3, 'encouraged': 3, 'could': 3, 'renounced': 3, 'warn': 3, 'mean': 3, 'upset': 3, 'ever': 3, 'joining': 3, 'boycott': 3, 'power': 3, 'wrath': 3, 'rejecting': 3, 'formally': 3, 'hurt': 3, 'disgust': 3, 'biggest': 3, 'call': 3, 'weary': 3, 'considered': 3, 'political': 3, 'unfair': 3, 'giant': 3, 'rankled': 3, 'total': 3, 'demonizing': 3, 'show': 3, 'already': 3, 'acceptable': 3, 'anger': 3, 'disdain': 3, 'failure': 3, 'disagree': 3, 'irritated': 3, 'law': 3, 'seems': 3, 'extremist': 3, 'consider': 3, 'found': 3, 'hope': 3, 'revolted': 3, 'many': 3, 'refuse': 3, 'disturbed': 3, 'wanted': 3, 'attached': 3, 'incapable': 3, 'joined': 3, 'berating': 3, 'people': 3, 'w': 3, 'frightening': 3, 'heavy': 3, 'painstakingly': 3, 'seen': 3, 'defy': 3, 'day': 3, 'disturbing': 3, 'inhuman': 3, 'violated': 3, 'blame': 3, 'racial': 3, 'agree': 3, 'thought': 3, 'anti-': 3, 'mandatory': 3, 'trashed': 3, 'reluctant': 3, 'waging': 3, 'worse': 3, 'find': 3, 'scare': 3, 'disappointed': 3, '"little': 3, 'unrealistic': 3, 'bristle': 3, 'doubt': 3, 'reason': 3, 'scepticism': 2, 'describing': 2, 'fuel-guzzling': 2, 'tide': 2, 'violates': 2, 'naked': 2, 'resistance': 2, 'rig': 2, '600': 2, 'pretty': 2, "'": 2, 'scrutiny': 2, 'always': 2, 'rising': 2, 'demand': 2, 'agriculture': 2, 'labeling': 2, 'studied': 2, 'loudly': 2, 'war': 2, 'resisted': 2, 'dismayed': 2, 'prisoner': 2, 'forget': 2, "world's": 2, 'factually': 2, 'hand': 2, 'raise': 2, 'targeted': 2, 'voiced': 2, 'vehemently': 2, 'marred': 2, 'frighten': 2, 'firing': 2, 'dump': 2, 'ban': 2, 'regarded': 2, 'disastrous': 2, 'devastating': 2, 'least': 2, 'deemed': 2, 'attempt': 2, 'botched': 2, 'simultaneously': 2, 'president': 2, 'violation': 2, 'exists': 2, 'mr': 2, 'confidence': 2, 'undermine': 2, 'fall': 2, 'blindly': 2, 'opportunistic': 2, 'remove': 2, 'flighty,': 2, 'strong': 2, 'do-it-our-way': 2, 'ugly': 2, 'mr.': 2, 'allow': 2, 'suffering': 2, 'resorting': 2, 'demonstrated': 2, 'pursuance': 2, 'imperialist': 2, 'sufficient': 2, 'substantial': 2, 'scathing': 2, 'almost': 2, 'likening': 2, 'oppose': 2, 'accusing': 2, 'possible': 2, 'going': 2, 'discourage': 2, 'pessimistic': 2, 'unfounded': 2, 'persistently': 2, 'complaint': 2, 'mere': 2, 'trigger': 2, 'condemnation': 2, 'perception': 2, 'deplored': 2, 'people,': 2, 'added': 2, 'growing': 2, 'heard': 2, 'label': 2, 'impossible': 2, 'walked': 2, 'fact': 2, 'subjugate': 2, 'involves': 2, 'month': 2, 'regretted': 2, 'although': 2, 'part': 2, 'look': 2, 'swelled': 2, "valentine's": 2, 'afraid': 2, 'plight': 2, 'agreed': 2, 'tarnishing': 2, 'versus': 2, 'reticence': 2, 'consistently': 2, 'turned': 2, 'listed': 2, 'pay': 2, 'shed': 2, 'keeping': 2, 'staged': 2, 'proceeding': 2, 'extremely': 2, 'burden': 2, 'unjust': 2, 'hard-line': 2, 'labelled': 2, 'boycotted': 2, 'evil': 2, 'former': 2, 'however': 2, 'turn': 2, 'guise': 2, 'red-penciled': 2, 'harsh': 2, 'shellshock': 2, 'suspected': 2, 'systematic': 2, 'realist': 2, 'point': 2, 'truly': 2, 'malicious': 2, 'vitriol': 2, 'happen': 2, 'true': 2, 'lobby': 2, 'foresaw': 2, 'anti-democractic': 2, 'depends': 2, 'gross': 2, 'enough': 2, 'described': 2, 'pragmatism': 2, 'despondent': 2, 'enjoys': 2, 'glossing': 2, 'lobbied': 2, 'double': 2, 'parasitic': 2, 'enemy': 2, 'pronouncement': 2, 'welcomed': 2, 'beneficiary': 2, 'reproached': 2, 'worried': 2, 'sit': 2, 'distributing': 2, 'increasingly': 2, 'constrained': 2, 'word': 2, 'army': 2, 'catering': 2, 'odious': 2, 'torture': 2, 'every': 2, 'suggested': 2, 'intense': 2, 'unanimous': 2, 'america': 2, '"not': 2, 'corner': 2, 'withering': 2, 'heckling': 2, 'well': 2, 'decides': 2, 'used': 2, 'worrying': 2, 'failed': 2, 'ignoring': 2, "what's": 2, 'amused': 2, 'nothing': 2, 'demanded': 2, 'opprobrium': 2, 'declined': 2, 'coup-meister': 2, 'crushed': 2, 'grand': 2, 'become': 2, 'contribution': 2, 'misguided': 2, 'inadmissible': 2, 'science': 2, 'nobody': 2, 'confusion': 2, 'containing': 2, 'go': 2, 'irresponsible': 2, 'threatening': 2, 'thug': 2, 'stressed': 2, 'contravenes': 2, 'compare': 2, 'slated': 2, 'issued': 2, 'credible': 2, 'disapproval': 2, 'demonstration': 2, 'repeated': 2, 'verge': 2, 'stolen': 2, 'see': 2, 'either': 2, 'us': 2, 'terribly': 2, 'hindered': 2, 'campaign': 2, 'humiliation': 2, 'seeing': 2, 'kesas': 2, 'break': 2, 'expressing': 2, 'lamented': 2, 'retribution': 2, 'writes': 2, 'hampering': 2, 'pose': 2, 'furthermore': 2, 'rejection': 2, 'fighting': 2, 'quietly': 2, 'portraying': 2, 'went': 2, 'categorized': 2, 'insisting': 2, 'turning': 2, 'interference': 2, 'difficulty': 1, 'one:': 1, 'seething': 1, 'incredible': 1, "no'": 1, 'told': 1, 'facilities,': 1, 'count': 1, 'radical': 1, 'lead': 1, 'help': 1, "terrorism's": 1, 'lost': 1, 'justice': 1, 'u.s.': 1, 'dramatic': 1, 'closer': 1, 'impinge': 1, 'severe': 1, 'inclined': 1, 'set': 1, 'betrayal': 1, 'le': 1, 'labeled': 1, 'quota,': 1, 'too,': 1, 'discriminatory': 1, 'innocent': 1, 'regime': 1, 'rapture': 1, 'violating': 1, 'effective': 1, 'instrumental': 1, 'conformity': 1, 'shook': 1, 'prohibition': 1, 'shrinking': 1, 'addition': 1, 'term': 1, 'warning': 1, 'pretext': 1, 'creates': 1, 'permafrost,': 1, 'increasing': 1, 'perceived': 1, 'artificial': 1, 'seriously': 1, 'contains': 1, 'opposite': 1, 'noted': 1, 'achieving': 1, 'anybody': 1, 'unprecedented': 1, 'compared': 1, 'disenfranchise': 1, 'housing': 1, 'heresy': 1, 'suddenly': 1, 'appalling': 1, 'line': 1, 'reported': 1, '["opinion"': 1, 'atrocious': 1, 'atmosphere': 1, 'killed': 1, 'fundamentally': 1, 'presidential': 1, 'fraud': 1, 'peace': 1, 'globe': 1, 'abuse': 1, 'antic': 1, 'incompetent': 1, 'new,': 1, 'profitable': 1, 'neither': 1, '--': 1, 'overshadowing': 1, 'according': 1, 'barbarity': 1, 'storm': 1, 'cheered': 1, 'injustice': 1, 'rogue': 1, 'coral': 1, 'misled': 1, 'unfortunate': 1, 'legal': 1, 'describe': 1, 'long': 1, 'problem,': 1, 'muslim': 1, 'deteriorated': 1, 'ripple': 1, 'benefit': 1, 'defiant': 1, 'bitter': 1, 'assassinate': 1, 'excessive': 1, 'overly': 1, 'manifold': 1, 'engulfed': 1, 'fiscal': 1, '"a': 1, 'grave': 1, 'taliban': 1, 'badly': 1, 'severely': 1, 'violator': 1, 'vague': 1, 'unnecessary': 1, 'supremacy': 1, 'argentina': 1, 'negative': 1, 'terming': 1, 'open': 1, 'farewell': 1, 'fair': 1, 'chavez': 1, 'sacrifice': 1, 'commended': 1, 'maltreated': 1, 'ulterior': 1, 'alternate': 1, 'tried': 1, 'electoral': 1, 'lumped': 1, 'resort': 1, 'reasonable': 1, 'committing': 1, 'extreme': 1, 'ambiguous': 1, 'washington': 1, 'hegemony': 1, 'costly': 1, 'visionary': 1, 'disputed': 1, 'risk': 1, 'negated': 1, 'acting': 1, 'orthodoxy': 1, 'dire': 1, 'counting': 1, 'strategy': 1, 'cite': 1, 'duplicity': 1, 'global': 1, 'sept.': 1, 'doubtful': 1, 'mistreatment': 1, 'dominating': 1, 'clean': 1, 'brian': 1, 'knock': 1, 'retaliate': 1, 'allows': 1, 'gain': 1, 'exit': 1, 'hardly': 1, 'sacrificing': 1, 'especially': 1, 'reef': 1, 'note': 1, 'convincing': 1, 'tarnish': 1, 'accept': 1, 'clear': 1, 'therefore': 1, 'damaging': 1, 'despair': 1, 'shot': 1, 'opinion': 1, 'friend': 1, 'block': 1, 'sarcastic': 1, 'current': 1, 'distorted': 1, 'journalist': 1, 'whether': 1, 'angrily': 1, 'overlooking': 1, 'avoid': 1, 'discrediting': 1, 'characterizing': 1, 'loss': 1, 'weak': 1, 'forging': 1, 'suffers': 1, 'sound': 1, 'shadow': 1, 'horrifying': 1, 'situation': 1, 'waited': 1, 'steal': 1, 'restless': 1, 'work': 1, 'unheeded': 1, 'test': 1, 'pointed': 1, 'honest': 1, 'oversight': 1, 'killing': 1, 'remain': 1, 'urging': 1, 'absolutely': 1, 'conceal': 1, 'transport': 1, 'crackdown': 1, 'better': 1, 'impression': 1, 'emit': 1, '"business-as-usual"': 1, "didn't": 1, 'brushed': 1, 'embark': 1, 'ballooned': 1, 'dysfunctional': 1, 'seeking': 1, 'resist': 1, 'easy': 1, 'differed': 1, 'traumatized': 1, 'suggestion': 1, 'time': 1, 'care': 1, 'wantonly': 1, 'heavy-handed': 1, 'crowding': 1, 'actual': 1, "can't": 1, 'aggressively': 1, 'typical': 1, 'sell': 1, 'concluded': 1, 'may': 1, 'forced': 1, 'relation': 1, 'sure': 1, 'sympathy': 1, 'interfere': 1, 'warm': 1, 'cosying': 1, 'regrettable': 1, 'overreacting': 1, 'greatest': 1, "mugabe's": 1, '"unjust': 1, 'arrested': 1, 'wrongful': 1, 'instance,': 1, 'shady': 1, 'italian': 1, 'voter': 1, 'bankroll': 1, 'public': 1, 'question': 1, "russia's": 1, 'ever-increasing': 1, 'certain': 1, 'desperate': 1, 'built': 1, 'repeat': 1, 'code': 1, 'invite': 1, 'warming,': 1, 'hegemonic': 1, 'factual': 1, 'vivid': 1, 'firmly': 1, 'violence': 1, 'incommunicado': 1, 'tough': 1, 'dog': 1, 'reluctance': 1, '"favourite': 1, 'tyrannical': 1, 'frustrate': 1, 'effect': 1, 'desperation': 1, 'kid': 1, 'hurdle': 1, 'disagreed': 1, 'seizes': 1, 'lacking': 1, 'responded': 1, 'dictation': 1, 'sounded': 1, 'lobbying': 1, 'wonder': 1, "america's": 1, 'unpopular': 1, 'try': 1, 'daylight': 1, 'demanding': 1, 'move': 1, 'kyoto': 1, 'mugabe': 1, 'rip-off': 1, 'like': 1, 'unleashed': 1, '"unstable': 1, 'apologized': 1, 'five': 1, 'lying': 1, 'uncivilized': 1, 'fiendish-looking': 1, 'manipulation': 1, '"surplus': 1, 'trying': 1, 'bringing': 1, 'counterproductive': 1, 'wwanted': 1, 'uneasy': 1, 'breeding': 1, 'inhumane': 1, 'waiting': 1, 'favor': 1, 'raised': 1, 'carried': 1, 'religious': 1, 'undemocratic': 1, 'sent': 1, 'glove': 1, 'fought': 1, 'largely': 1, 'daily': 1, 'aim': 1, 'continue': 1, 'denying': 1, 'remarked': 1, 'judgment': 1, 'number': 1, 'serve': 1, 'conceived': 1, 'six': 1, 'disorganization': 1, 'backing': 1, 'brutally': 1, 'sabotage': 1, 'fit': 1, 'troubled': 1, 'anxiously': 1, 'afghanistan': 1, "'enemies'": 1, '`world': 1, 'shellshocked': 1, 'intent': 1, 'understand': 1, 'hundred': 1, 'probably': 1, 'dreadful': 1, 'inexorably': 1, 'lose': 1, 'owner': 1, 'taking': 1, 'succumbing': 1, 'really': 1, 'hostile': 1, 'unorthodoxy': 1, 'frantic': 1, 'fraudulent,': 1, '50': 1, 'jesus': 1, 'limbo': 1, 'aggression': 1, 'refusing': 1, 'thousand': 1, 'dictatorial': 1, 'suggest': 1, 'weakening': 1, 'whatsoever': 1, 'deliberately': 1, 'becoming': 1, 'mistake': 1, 'mistaken': 1, 'standard': 1, 'consolidating': 1, 'head': 1, 'apprehension': 1, 'industrial': 1, 'leader': 1, 'bitterly': 1, 'community': 1, 'ugliest': 1, 'making': 1, 'force': 1, 'responsibility': 1, 'claiming': 1, 'imagination': 1, 'focused': 1, 'earn': 1, 'great': 1, 'enthusiast': 1, 'alarm': 1, 'difficult': 1, 'scourge': 1, 'abandoned': 1, 'psychology': 1, 'civilized': 1, 'degrading': 1, 'enforce': 1, 'likely': 1, 'committed': 1, 'oppression': 1, "that's": 1, 'act': 1, 'today': 1, 'struggled': 1, 'worth': 1, 'packing': 1, 'unfortunately': 1, '2010,': 1, 'clucked': 1, 'way': 1, 'election': 1, 'purely': 1, 'stupid': 1, "country's": 1, 'last-ditch': 1, 'sensory': 1, 'glaring': 1, 'fraud-tainted': 1, 'critical': 1, 'disagreement': 1, 'trillion': 1, 'broke': 1, 'bloody': 1, 'interpretation': 1, 'castle': 1, 'instance': 1, 'accomplice': 1, 'axed': 1, 'appeared': 1, 'opponent': 1, 'uncalled-for': 1, 'topple': 1, 'shooting': 1, 'hypocrisy': 1, 'mostly': 1, 'get': 1, 'gangster': 1, 'glib': 1, 'assume': 1, 'crush': 1, 'consequently': 1, 'guilty': 1, 'everything': 1, 'cornered': 1, 'infrastructure': 1, 'need': 1, 'place': 1, 'illusory': 1, 'constitute': 1, 'back': 1, 'covert': 1, 'unsubstantiated': 1, 'harmful': 1, 'deeply': 1, 'bird': 1, 'state': 1, 'termed': 1, 'smear': 1, 'summer': 1, 'controlling': 1, 'exactly': 1, 'coup-plotting': 1, 'accidental': 1, 'tactless': 1, 'assuming': 1, 'share': 1, 'first': 1, 'shown': 1, 'freedom': 1, 'paying': 1, 'illegitimate': 1, 'shackle': 1, 'alienate': 1, 'responsible': 1, 'price': 1, 'bad': 1, 'frantically': 1, 'led': 1, 'subsequently': 1, 'senator': 1, 'underdevelopment': 1, 'horror': 1, 'imposing': 1, 'cope': 1, 'trumped': 1, 'year': 1, 'unilateralism': 1, 'reflected': 1, 'inconceivable': 1, 'championing': 1, 'disbelieving': 1, 'meddling': 1, 'islam': 1, 'product': 1, 'cruel,': 1, 'emptiness': 1, 'abusing': 1, 'intolerable': 1, 'scared': 1, 'follow': 1, 'horrible': 1, 'obvious': 1, 'instability': 1, 'harm': 1, 'announced': 1, 'system': 1, 'tacitly': 1, 'differ': 1, 'positive': 1, 'deteriorating': 1, "chavez's": 1, 'prime': 1, 'befuddled': 1, 'argued': 1, 'coordinated': 1, 'pull': 1, 'devastatingly': 1, 'comment': 1, 'shred': 1, 'order': 1, '$40-billion': 1, 'bigger': 1, 'alone': 1, 'tolerable': 1, 'argue': 1, 'trouser': 1, 'thus': 1, 'seek': 1, 'wishful': 1, 'brazen': 1, 'promoted': 1, 'imperil': 1, 'condemn': 1, 'reflect': 1, 'manifestation': 1, 'deep': 1, 'loathsome': 1, 'actually': 1, 'wrong': 1, 'slandering': 1, 'ignored': 1, '11': 1, 'compounded': 1, 'asked': 1, 'lack': 1, 'supper': 1, 'ineffective': 1, 'fortunately': 1, 'bade': 1, 'leaving': 1, 'prepared': 1, 'creating': 1, 'cautioned': 1, 'sticking': 1, 'showered': 1, 'belligerent': 1, 'aside': 1, 'indeed': 1, 'assassination': 1})
+
+//Below is a sample article scraped from the New York Times discussing cryptocurrency.
+//I provided the annotation by labeling P ("Positive"), N ("Negative"), NEU ("Neutral"), X ("Not usable")
+
+But many virtual currency aficionados argue that the energy consumption is worth it for the grander cause of securing the Bitcoin and Ethereum networks and making a new kind of financial infrastructure, free from the meddling of banks or governments
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+“The electricity usage is really essential,” said Peter Van Valkenburgh, the director of research at Coin Center, a group that advocates for virtual currency technology
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+ “Because of the costs, we know the only people participating are serious, that they are economically invested
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ That creates the incentives for cooperation.”
+
+This dispute has its foundations in the complex systems that produce tokens like Bitcoin; Ether, the currency on the Ethereum network; and many other new virtual currencies
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+All of the computers trying to mine tokens are in a computational race, trying to find a particular, somewhat random answer to a math algorithm
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ The algorithm is so complicated that the only way to find the desired answer is to make lots of different guesses
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ The more guesses a computer makes, the better its chances of winning
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ But each time the computers try new guesses, they use computational power and electricity
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+The lure of new Bitcoins encourages people to use lots of fast computers, and lots of electricity, to find the right answer and unlock the new Bitcoins that are distributed every 10 minutes or so
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+This process was defined by the original Bitcoin software, released in 2009
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ The goal was to distribute new coins to people on the Bitcoin network without a central institution handing out the money
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+Early on, it was possible to win the contest with just a laptop computer
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ But the rules of the network dictate that as more computers join in the race, the algorithm automatically adjusts to get harder, requiring anyone who wants to compete to use more computers and more electricity
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+Advertisement Continue reading the main story
+
+These days, the 12.5 Bitcoins that are handed out every 10 minutes or so are worth about $145,000, so people have been willing to invest astronomical sums to participate in this race, which has in turn made the race harder
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ This explains why there are now enormous server farms around the world dedicated to mining Bitcoin
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+This process is central to Bitcoin’s existence because in the process of mining, all the computers are also serving as accountants for the Bitcoin network
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ The algorithm the computers solve requires them to also keep track of all the new transactions coming onto the network
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+Photo
+
+The mining race is meant to be hard so that no one can dominate the accounting and fudge the records
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ In the 2008 paper that first described Bitcoin, the mysterious creator of the virtual currency, Satoshi Nakamoto, wrote that the system was designed to thwart a “greedy attacker” who might want to alter the records and “defraud people by stealing back his payments.” Because of the mining and accounting rules, the attacker “ought to find it more profitable to play by the rules.”
+
+The rules have kept attackers at bay in the nine years since the network got going
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ Without this process, most computer scientists agree, Bitcoin would not work
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+But there is disagreement over the real value of Bitcoin and the network that supports it
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+
+
+For people who consider Bitcoin nothing more than a speculative bubble — or a speculative bubble that has enabled online drug sales and ransom payments — any new contribution toward global warming is probably not worth it
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+
+
+Newsletter Sign Up Continue reading the main story Please verify you're not a robot by clicking the box
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ Invalid email address
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ Please re-enter
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ You must select a newsletter to subscribe to
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ Sign Up You agree to receive occasional updates and special offers for The New York Times's products and services
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ Thank you for subscribing
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ An error has occurred
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ Please try again later
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ View all New York Times newsletters
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+
+
+But Bitcoin aficionados counter that it has allowed for the creation of the first financial network with no government or company in charge
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ In countries like Zimbabwe and Argentina, Bitcoin has sometimes provided a more stable place to park money than the local currency
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+ And in countries with more stable economies, Bitcoin has led to a flurry of new investments, jobs and start-up companies
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+
+
+“Labeling Bitcoin mining as a ‘waste’ is a failure to look at the big picture,” Marc Bevand, a miner and analyst, wrote on his blog
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ The jobs alone, he added, “are a direct, measurable and positive impact that Bitcoin already made on the economy.”
+
+But even some people who are interested in all that innovation have worried about the enormous electrical use
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+
+
+Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ de Vries, who keeps track of the use on the site Digiconomist, estimated that each Bitcoin transaction currently required 80,000 times more electricity to process than each Visa credit card transaction, for example
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+Advertisement Continue reading the main story
+
+“Visa is more centralized,” Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ de Vries said
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ “If you really distrust the financial system, maybe that is unattractive
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+ But is that difference really worth the additional energy cost? I think for most people that is probably not worth the case.”
+
+The figures published by Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ de Vries have been criticized by Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+ Bevand and other Bitcoin fans, who say they overstate the energy costs by a factor of about three
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+ Many critics add that producing and securing physical money and gold also require lots of energy, in some cases as much as or more than Bitcoin uses
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+
+
+Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ Van Valkenburgh, of the Coin Center, has argued that Bitcoin miners, who can do the work anywhere, have an incentive to situate themselves near cheap, often green energy sources, especially now that coal-guzzling China appears to be exiting the mining business
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ Several mining companies have opened server farms near geothermal energy in Iceland and hydroelectric power in Washington State
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+But the concerns about electricity use have still hit home with many in the industry
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ The virtual currencies known as Ripple and Stellar, which were created after Bitcoin, were designed not to require electrically demanding mining
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+Perhaps the biggest change could come from the new mining process proposed by Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ Buterin for Ethereum, a process that some smaller currencies are already using
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ Known as “proof of stake,” it distributes new coins to people who are able to prove their ownership of existing coins — their stake in the system
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ The current method, which relies so heavily on computational power, is called “proof of work.” Under that method, the accounts and people who get new coins don’t need existing tokens
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ They just need lots of computers to take part in the computational race
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+Energy concerns are not the only factor encouraging the move
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ Buterin also believes that the new method, which is likely to be rolled out over the next year, will allow for a less centralized network of computers overseeing the system
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+
+But it is far from clear that the method will be as secure as the one used by Bitcoin
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+ Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ Buterin has been fiercely attacked by Bitcoin advocates, who say his proposal will lose the qualities that make virtual currencies valuable
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+
+
+Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ Van Valkenburgh said that for now, throwing lots of computing power into the mix — and the electricity that it burns — was the only proven solution to the problems Bitcoin solves
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+
+
+“At the moment, if you want robust security, you need proof of work,” he said.
+
+What sentiment does this sentence possess? (P|N|NEU|X) NEU
+
+// Array below represents the outcomes
+
+// 0 = Positive, 1 = negative, 2 = neutral
+// 1st array is the annotated outcomes, second array is predicted
+// These results were skewed by the neutral class
+
+[2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 0, 0, 2, 1, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2]
+[0, 0, 2, 0, 0, 2, 0, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 0, 0]
+
+//Results generated using sci-kit learn
+
+precision: [ 0.07692308  0.33333333  0.78125   ]
+recall: [ 0.33333333  0.11111111  0.69444444]
+fscore: [ 0.125       0.16666667  0.73529412]
+support: [ 3  9 36]
+
+//I then used the same document, but without the neutral class for hopefully better results. 
+
+//My annotations were a little inconsistent because I realized I had labeled a couple sentences incorrectly
+
+
+There Is Nothing Virtual About Bitcoin’s Energy Appetite Image An employee at a Bitmain facility in Inner Mongolia, one of the biggest Bitcoin farms in the world
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+ Credit Giulia Marchi for The New York Times
+
+SAN FRANCISCO — Creating a new Bitcoin requires electricity
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ A lot of it
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+In the virtual currency world this creation process is called “mining.” There is no physical digging, since Bitcoins are purely digital
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ But the computer power needed to create each digital token consumes at least as much electricity as the average American household burns through in two years, according to figures from Morgan Stanley and Alex de Vries, an economist who tracks energy use in the industry
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+The total network of computers plugged into the Bitcoin network consumes as much energy each day as some medium-size countries — which country depends on whose estimates you believe
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ And the network supporting Ethereum, the second-most valuable virtual currency, gobbles up another country’s worth of electricity each day
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+The energy consumption of these systems has risen as the prices of virtual currencies have skyrocketed, leading to a vigorous debate among Bitcoin and Ethereum enthusiasts about burning so much electricity
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+
+
+The creator of Ethereum, Vitalik Buterin, is leading an experiment with a more energy-efficient way to create tokens, in part because of his concern about the impact that the network’s electricity use could have on global warming
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+“I would personally feel very unhappy if my main contribution to the world was adding Cyprus’s worth of electricity consumption to global warming,” Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+ Buterin said in an interview
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+But many virtual currency aficionados argue that the energy consumption is worth it for the grander cause of securing the Bitcoin and Ethereum networks and making a new kind of financial infrastructure, free from the meddling of banks or governments
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+“The electricity usage is really essential,” said Peter Van Valkenburgh, the director of research at Coin Center, a group that advocates for virtual currency technology
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ “Because of the costs, we know the only people participating are serious, that they are economically invested
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ That creates the incentives for cooperation.”
+
+This dispute has its foundations in the complex systems that produce tokens like Bitcoin; Ether, the currency on the Ethereum network; and many other new virtual currencies
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+All of the computers trying to mine tokens are in a computational race, trying to find a particular, somewhat random answer to a math algorithm
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ The algorithm is so complicated that the only way to find the desired answer is to make lots of different guesses
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ The more guesses a computer makes, the better its chances of winning
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ But each time the computers try new guesses, they use computational power and electricity
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+The lure of new Bitcoins encourages people to use lots of fast computers, and lots of electricity, to find the right answer and unlock the new Bitcoins that are distributed every 10 minutes or so
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+This process was defined by the original Bitcoin software, released in 2009
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ The goal was to distribute new coins to people on the Bitcoin network without a central institution handing out the money
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+Early on, it was possible to win the contest with just a laptop computer
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ But the rules of the network dictate that as more computers join in the race, the algorithm automatically adjusts to get harder, requiring anyone who wants to compete to use more computers and more electricity
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+These days, the 12.5 Bitcoins that are handed out every 10 minutes or so are worth about $145,000, so people have been willing to invest astronomical sums to participate in this race, which has in turn made the race harder
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ This explains why there are now enormous server farms around the world dedicated to mining Bitcoin
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+This process is central to Bitcoin’s existence because in the process of mining, all the computers are also serving as accountants for the Bitcoin network
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ The algorithm the computers solve requires them to also keep track of all the new transactions coming onto the network
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+Image A computer server farm in Iceland, dedicated to mining Bitcoin
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Credit Richard Perry/The New York Times
+
+The mining race is meant to be hard so that no one can dominate the accounting and fudge the records
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ In the 2008 paper that first described Bitcoin, the mysterious creator of the virtual currency, Satoshi Nakamoto, wrote that the system was designed to thwart a “greedy attacker” who might want to alter the records and “defraud people by stealing back his payments.” Because of the mining and accounting rules, the attacker “ought to find it more profitable to play by the rules.”
+
+The rules have kept attackers at bay in the nine years since the network got going
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Without this process, most computer scientists agree, Bitcoin would not work
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+But there is disagreement over the real value of Bitcoin and the network that supports it
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+
+
+For people who consider Bitcoin nothing more than a speculative bubble — or a speculative bubble that has enabled online drug sales and ransom payments — any new contribution toward global warming is probably not worth it
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+
+
+But Bitcoin aficionados counter that it has allowed for the creation of the first financial network with no government or company in charge
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ In countries like Zimbabwe and Argentina, Bitcoin has sometimes provided a more stable place to park money than the local currency
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+ And in countries with more stable economies, Bitcoin has led to a flurry of new investments, jobs and start-up companies
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+
+
+“Labeling Bitcoin mining as a ‘waste’ is a failure to look at the big picture,” Marc Bevand, a miner and analyst, wrote on his blog
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ The jobs alone, he added, “are a direct, measurable and positive impact that Bitcoin already made on the economy.”
+
+But even some people who are interested in all that innovation have worried about the enormous electrical use
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+
+
+Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ de Vries, who keeps track of the use on the site Digiconomist, estimated that each Bitcoin transaction currently required 80,000 times more electricity to process than each Visa credit card transaction, for example
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+“Visa is more centralized,” Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ de Vries said
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ “If you really distrust the financial system, maybe that is unattractive
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+ But is that difference really worth the additional energy cost? I think for most people that is probably not worth the case.”
+
+The figures published by Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ de Vries have been criticized by Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+ Bevand and other Bitcoin fans, who say they overstate the energy costs by a factor of about three
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+ Many critics add that producing and securing physical money and gold also require lots of energy, in some cases as much as or more than Bitcoin uses
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Van Valkenburgh, of the Coin Center, has argued that Bitcoin miners, who can do the work anywhere, have an incentive to situate themselves near cheap, often green energy sources, especially now that coal-guzzling China appears to be exiting the mining business
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Several mining companies have opened server farms near geothermal energy in Iceland and hydroelectric power in Washington State
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+But the concerns about electricity use have still hit home with many in the industry
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ The virtual currencies known as Ripple and Stellar, which were created after Bitcoin, were designed not to require electrically demanding mining
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+Perhaps the biggest change could come from the new mining process proposed by Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Buterin for Ethereum, a process that some smaller currencies are already using
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Known as “proof of stake,” it distributes new coins to people who are able to prove their ownership of existing coins — their stake in the system
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ The current method, which relies so heavily on computational power, is called “proof of work.” Under that method, the accounts and people who get new coins don’t need existing tokens
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ They just need lots of computers to take part in the computational race
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+Energy concerns are not the only factor encouraging the move
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Buterin also believes that the new method, which is likely to be rolled out over the next year, will allow for a less centralized network of computers overseeing the system
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+But it is far from clear that the method will be as secure as the one used by Bitcoin
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Buterin has been fiercely attacked by Bitcoin advocates, who say his proposal will lose the qualities that make virtual currencies valuable
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+
+
+Mr
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Van Valkenburgh said that for now, throwing lots of computing power into the mix — and the electricity that it burns — was the only proven solution to the problems Bitcoin solves
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+“At the moment, if you want robust security, you need proof of work,” he said
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ SEE SAMPLE Please verify you’re not a robot by clicking the box
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Invalid email address
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Please re-enter
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ You must select a newsletter to subscribe to
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ * Required field You agree to receive occasional updates and special offers for The New York Times products and services
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ * Required field Thank you for subscribing
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ View all New York Times newsletters
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ An error has occurred
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Please try again later
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ You are already subscribed to this email
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ View all New York Times newsletters
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+ Sign Up
+
+What sentiment does this sentence possess? (P|N|NEU|X) x
+
+
+// 0 indicates positive classification for a sentence, 1 indicates negative. 
+// First array below is the annotated results, second is predicted results
+// Unfortunately, there wasn't many positive sentences in the documents here.
+
+[1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1]
+[1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1]
+precision: [ 0.   0.8]
+recall: [ 0.          0.88888889]
+fscore: [ 0.          0.84210526]
+support: [2 9]
+
+// Below is the data I used from BBC dataset. I think this dataset can be used for my own annotation.
+
+["High fuel prices hit BA's profits\n\nBritish Airways has blamed high fuel prices for a 40% drop in profits.", 'Reporting its results for the three months to 31 December 2004, the airline made a pre-tax profit of £75m ($141m) compared with £125m a year earlier.', 'Rod Eddington, BA\'s chief executive, said the results were "respectable" in a third quarter when fuel costs rose by £106m or 47.3%.', "BA's profits were still better than market expectation of £59m, and it expects a rise in full-year revenues.", 'To help offset the increased price of aviation fuel, BA last year introduced a fuel surcharge for passengers.', 'In October, it increased this from £6 to £10 one-way for all long-haul flights, while the short-haul surcharge was raised from £2.50 to £4 a leg.', "Yet aviation analyst Mike Powell of Dresdner Kleinwort Wasserstein says BA's estimated annual surcharge revenues - £160m - will still be way short of its additional fuel costs - a predicted extra £250m.", 'Turnover for the quarter was up 4.3% to £1.97bn, further benefiting from a rise in cargo revenue.', 'Looking ahead to its full year results to March 2005, BA warned that yields - average revenues per passenger - were expected to decline as it continues to lower prices in the face of competition from low-cost carriers.', 'However, it said sales would be better than previously forecast.', '"For the year to March 2005, the total revenue outlook is slightly better than previous guidance with a 3% to 3.5% improvement anticipated," BA chairman Martin Broughton said.', 'BA had previously forecast a 2% to 3% rise in full-year revenue.', 'It also reported on Friday that passenger numbers rose 8.1% in January.', 'Aviation analyst Nick Van den Brul of BNP Paribas described BA\'s latest quarterly results as "pretty modest".', '"It is quite good on the revenue side and it shows the impact of fuel surcharges and a positive cargo development, however, operating margins down and cost impact of fuel are very strong," he said.', 'Since the 11 September 2001 attacks in the United States, BA has cut 13,000 jobs as part of a major cost-cutting drive.', '"Our focus remains on reducing controllable costs and debt whilst continuing to invest in our products," Mr Eddington said.', '"For example, we have taken delivery of six Airbus A321 aircraft and next month we will start further improvements to our Club World flat beds."', "BA's shares closed up four pence at 274.5 pence."]
+High fuel prices hit BA's profits
+
+British Airways has blamed high fuel prices for a 40% drop in profits.
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+Reporting its results for the three months to 31 December 2004, the airline made a pre-tax profit of £75m ($141m) compared with £125m a year earlier.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+Rod Eddington, BA's chief executive, said the results were "respectable" in a third quarter when fuel costs rose by £106m or 47.3%.
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+BA's profits were still better than market expectation of £59m, and it expects a rise in full-year revenues.
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+To help offset the increased price of aviation fuel, BA last year introduced a fuel surcharge for passengers.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+In October, it increased this from £6 to £10 one-way for all long-haul flights, while the short-haul surcharge was raised from £2.50 to £4 a leg.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+Yet aviation analyst Mike Powell of Dresdner Kleinwort Wasserstein says BA's estimated annual surcharge revenues - £160m - will still be way short of its additional fuel costs - a predicted extra £250m.
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+Turnover for the quarter was up 4.3% to £1.97bn, further benefiting from a rise in cargo revenue.
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+Looking ahead to its full year results to March 2005, BA warned that yields - average revenues per passenger - were expected to decline as it continues to lower prices in the face of competition from low-cost carriers.
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+However, it said sales would be better than previously forecast.
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+"For the year to March 2005, the total revenue outlook is slightly better than previous guidance with a 3% to 3.5% improvement anticipated," BA chairman Martin Broughton said.
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+BA had previously forecast a 2% to 3% rise in full-year revenue.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+It also reported on Friday that passenger numbers rose 8.1% in January.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+Aviation analyst Nick Van den Brul of BNP Paribas described BA's latest quarterly results as "pretty modest".
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+"It is quite good on the revenue side and it shows the impact of fuel surcharges and a positive cargo development, however, operating margins down and cost impact of fuel are very strong," he said.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+Since the 11 September 2001 attacks in the United States, BA has cut 13,000 jobs as part of a major cost-cutting drive.
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+"Our focus remains on reducing controllable costs and debt whilst continuing to invest in our products," Mr Eddington said.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+"For example, we have taken delivery of six Airbus A321 aircraft and next month we will start further improvements to our Club World flat beds."
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+BA's shares closed up four pence at 274.5 pence.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+
+//Still quite abysmal results, but I think just shows I have to use a different training set
+
+[1, 0, 0, 1, 0, 1, 0, 0, 1]
+[1, 1, 0, 0, 1, 1, 1, 1, 1]
+precision: [ 0.5         0.42857143]
+recall: [ 0.2   0.75]
+fscore: [ 0.28571429  0.54545455]
+support: [5 4]
+
+-----------------------------------------
+
+//Another BBC article is below.
+
+
+['Dollar gains on Greenspan speech\n\nThe dollar has hit its highest level against the euro in almost three months after the Federal Reserve head said the US trade deficit is set to stabilise.', "And Alan Greenspan highlighted the US government's willingness to curb spending and rising household savings as factors which may help to reduce it.", 'In late trading in New York, the dollar reached $1.2871 against the euro, from $1.2974 on Thursday.', 'Market concerns about the deficit has hit the greenback in recent months.', "On Friday, Federal Reserve chairman Mr Greenspan's speech in London ahead of the meeting of G7 finance ministers sent the dollar higher after it had earlier tumbled on the back of worse-than-expected US jobs data.", '"I think the chairman\'s taking a much more sanguine view on the current account deficit than he\'s taken for some time," said Robert Sinche, head of currency strategy at Bank of America in New York.', '"He\'s taking a longer-term view, laying out a set of conditions under which the current account deficit can improve this year and next."', 'Worries about the deficit concerns about China do, however, remain.', "China's currency remains pegged to the dollar and the US currency's sharp falls in recent months have therefore made Chinese export prices highly competitive.", 'But calls for a shift in Beijing\'s policy have fallen on deaf ears, despite recent comments in a major Chinese newspaper that the "time is ripe" for a loosening of the peg.', 'The G7 meeting is thought unlikely to produce any meaningful movement in Chinese policy.', "In the meantime, the US Federal Reserve's decision on 2 February to boost interest rates by a quarter of a point - the sixth such move in as many months - has opened up a differential with European rates.", 'The half-point window, some believe, could be enough to keep US assets looking more attractive, and could help prop up the dollar.', "The recent falls have partly been the result of big budget deficits, as well as the US's yawning current account gap, both of which need to be funded by the buying of US bonds and assets by foreign firms and governments.", 'The White House will announce its budget on Monday, and many commentators believe the deficit will remain at close to half a trillion dollars.']
+Dollar gains on Greenspan speech
+
+The dollar has hit its highest level against the euro in almost three months after the Federal Reserve head said the US trade deficit is set to stabilise.
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+And Alan Greenspan highlighted the US government's willingness to curb spending and rising household savings as factors which may help to reduce it.
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+In late trading in New York, the dollar reached $1.2871 against the euro, from $1.2974 on Thursday.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+Market concerns about the deficit has hit the greenback in recent months.
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+On Friday, Federal Reserve chairman Mr Greenspan's speech in London ahead of the meeting of G7 finance ministers sent the dollar higher after it had earlier tumbled on the back of worse-than-expected US jobs data.
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+"I think the chairman's taking a much more sanguine view on the current account deficit than he's taken for some time," said Robert Sinche, head of currency strategy at Bank of America in New York.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+"He's taking a longer-term view, laying out a set of conditions under which the current account deficit can improve this year and next."
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+Worries about the deficit concerns about China do, however, remain.
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+China's currency remains pegged to the dollar and the US currency's sharp falls in recent months have therefore made Chinese export prices highly competitive.
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+But calls for a shift in Beijing's policy have fallen on deaf ears, despite recent comments in a major Chinese newspaper that the "time is ripe" for a loosening of the peg.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+The G7 meeting is thought unlikely to produce any meaningful movement in Chinese policy.
+
+What sentiment does this sentence possess? (P|N|NEU|X) N
+In the meantime, the US Federal Reserve's decision on 2 February to boost interest rates by a quarter of a point - the sixth such move in as many months - has opened up a differential with European rates.
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+The half-point window, some believe, could be enough to keep US assets looking more attractive, and could help prop up the dollar.
+
+What sentiment does this sentence possess? (P|N|NEU|X) P
+The recent falls have partly been the result of big budget deficits, as well as the US's yawning current account gap, both of which need to be funded by the buying of US bonds and assets by foreign firms and governments.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+The White House will announce its budget on Monday, and many commentators believe the deficit will remain at close to half a trillion dollars.
+
+What sentiment does this sentence possess? (P|N|NEU|X) X
+
+//Results are better here, but the document isn't very long.
+
+[0, 0, 1, 1, 1, 1, 1, 0, 0]
+[1, 0, 1, 1, 1, 1, 1, 1, 0]
+precision: [ 1.          0.71428571]
+recall: [ 0.5  1. ]
+fscore: [ 0.66666667  0.83333333]
+support: [4 5]
