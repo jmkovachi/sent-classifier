@@ -53,7 +53,7 @@ class MaxEnt:
             count = 0
            # print(str(c) + ' : ' + str(len(feature_set)))
             c += 1
-            print(c)
+            #print(c)
             for doc in document_set: 
                 if feature in doc[0]:
                     count += 1
@@ -67,16 +67,23 @@ class MaxEnt:
             
             # calculate the max Constant value
             max_C = 0
+            pos_features = 0
+            neg_features = 0
             for doc in document_set:
                 for cl in class_set:
                     tmp = 0
                     for feature in feature_set:
                         if feature in doc[0] and cl == doc[1]:
+                            if cl == 'positive':
+                                pos_features += 1
+                            elif cl == 'negative':
+                                neg_features += 1
                             tmp += 1
                     if tmp > max_C:
                         max_C = tmp
                     
-           
+            
+            
             for i in range(0, len(document_set)):
                 
                 for key, cl in document_set[i][2].items():
@@ -88,14 +95,17 @@ class MaxEnt:
                         
                         feature_weight = feature_weight + 1 if feature in doc[0] and key == document_set[i][1] else feature_weight
                         document_set[i][2][key] *= (normalizing_param[feature] ** feature_weight)
-                    
+
+                             
+                    tmp_sum = pos_features if cl == 'positive' else neg_features
+                    document_set[i][2][key] *= max_C - tmp_sum
                     #document_set[i][2][cl_index] *= (max_C - count)
                     # calculate normalizing constant
                     document_set[i][2][key] /= MaxEnt.calculate_Norm_Constant(class_set, feature_set, document_set, i, normalizing_param)
-                
+            iter_count += 1
+            print(iter_count)
             for feature in feature_set:
-                iter_count += 1
-                print(expected_prior[feature] - MaxEnt.calculate_Expected(document_set, feature))
+                #print(expected_prior[feature] - MaxEnt.calculate_Expected(document_set, feature))
                 if (math.isnan(expected_prior[feature] - MaxEnt.calculate_Expected(document_set, feature))):
                     flag = False
                     break
@@ -136,8 +146,8 @@ class MaxEnt:
     def calculate_Expected(document_set, feature):
         sumVal = 0
         classes = ['positive', 'negative']
-        for index in range(0,len(document_set)):
-            for cl in classes:
+        for cl in classes:
+            for index in range(0,len(document_set)):
                 sumVal += document_set[index][2][cl] * (1 if feature in document_set[index][0] and document_set[index][1] == cl else 0)
         return sumVal
                 

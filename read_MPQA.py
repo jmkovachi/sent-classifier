@@ -12,6 +12,7 @@ import os
 from collections import Counter
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from read_movie_reviews import read_Movies as movie_reader
 
 class extract_MPQA:
     
@@ -80,29 +81,23 @@ class extract_MPQA:
         wordnet_lemmatizer = WordNetLemmatizer()
         cnt_pos = Counter()
         cnt_neg = Counter()
-        cnt_neu = Counter()
         pol_list.extend(sent_list)
         stops = set(stopwords.words('english'))
         for pol in pol_list:
             pos = [wordnet_lemmatizer.lemmatize(x) for x in pol[0].split(' ') 
-                    if (pol[1] == 'positive' #or pol[1] == 'uncertain-positive' 
-                        or pol[1] == 'both' or pol[1] == 'sentiment-pos') 
-                        and x not in stops]
+                    if (pol[1] == 'positive' 
+                        and x not in stops)]
             neg = [wordnet_lemmatizer.lemmatize(x) for x in pol[0].split(' ') 
-                    if (pol[1] == 'negative' #or pol[1] == 'uncertain-negative' 
-                        or pol[1] == 'both' or pol[1] == 'sentiment-neg') 
-                        and x not in stops] 
-            neu = [wordnet_lemmatizer.lemmatize(x) for x in pol[0].split(' ') 
-                    if (pol[1] == 'neutral')
-                        and x not in stops] 
+                    if (pol[1] == 'negative' 
+                        and x not in stops)] 
+
             
             for word in pos:
                 cnt_pos[word] += 1
             for word in neg:
                 cnt_neg[word] += 1
-            for word in neu:
-                cnt_neu[word] += 1
-        return cnt_pos, cnt_neg, cnt_neu
+
+        return cnt_pos, cnt_neg
     
     @staticmethod
     def count(pol_dict):
