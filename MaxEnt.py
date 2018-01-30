@@ -19,13 +19,6 @@ class MaxEnt:
     """
     @staticmethod
     def train(feature_set, document_set, class_set):
-        # np = numpy()
-        # np.zeros(len(feature_set), len(document_set))
-        
-        features_i = {feature : {} for feature in feature_set}
-        
-        doc_prob = {}
-        
         
         normalizing_param = {}
         
@@ -58,7 +51,7 @@ class MaxEnt:
                 if feature in doc[0]:
                     count += 1
             expected_prior[feature] = count / len(document_set)
-        
+            
         iter_count = 0
         
         flag = True
@@ -89,35 +82,29 @@ class MaxEnt:
                 for key, cl in document_set[i][2].items():
                     document_set[i][2][key] = 1
                     feature_weight = 0
-                    # print(i)
                     count = 0
                     for feature in feature_set:
                         
-                        feature_weight = feature_weight + 1 if feature in doc[0] and key == document_set[i][1] else feature_weight
+                        feature_weight = 1 if feature in doc[0] and key == document_set[i][1] else 0
+                        #print(feature_weight)
                         document_set[i][2][key] *= (normalizing_param[feature] ** feature_weight)
 
                              
                     tmp_sum = pos_features if cl == 'positive' else neg_features
-                    document_set[i][2][key] *= max_C - tmp_sum
-                    #document_set[i][2][cl_index] *= (max_C - count)
+                    if key == '**k+1**':
+                        document_set[i][2][key] *= max_C - tmp_sum
+                        
                     # calculate normalizing constant
-                    document_set[i][2][key] /= MaxEnt.calculate_Norm_Constant(class_set, feature_set, document_set, i, normalizing_param)
+                    document_set[i][2][key] /= MaxEnt.calculate_Norm_Constant(class_set, feature_set, document_set[i], normalizing_param)
             iter_count += 1
             print(iter_count)
             for feature in feature_set:
-                #print(expected_prior[feature] - MaxEnt.calculate_Expected(document_set, feature))
-                if (math.isnan(expected_prior[feature] - MaxEnt.calculate_Expected(document_set, feature))):
-                    flag = False
-                    break
-                #print(normalizing_param[feature])
-                #print("Before: " + str(normalizing_param[feature]))
-                if (expected_prior[feature] - MaxEnt.calculate_Expected(document_set, feature) < .0000000000000000000001 and expected_prior[feature] - MaxEnt.calculate_Expected(document_set, feature) > 0):
+                if (expected_prior[feature] - MaxEnt.calculate_Expected(document_set, feature) < .05 and expected_prior[feature] - MaxEnt.calculate_Expected(document_set, feature) > 0):
                     flag = False
                     break
                 normalizing_param[feature] = normalizing_param[feature] * ((expected_prior[feature] / MaxEnt.calculate_Expected(document_set, feature))**(1/max_C))
-                #print("After: " + str(normalizing_param[feature]))
             
-       # feature_Kplus1 = max_C - 
+        return normalizing_param
                             
     @staticmethod
     def count(feature, doc_set, cl):
@@ -129,13 +116,13 @@ class MaxEnt:
         return count
     
     @staticmethod
-    def calculate_Norm_Constant(class_set, feature_set, document_set, index, normalizing_param):
+    def calculate_Norm_Constant(class_set, feature_set, document, normalizing_param):
         Z = 0
         for cl in class_set:
             tmp = 1
             for feature in feature_set:
                 feature_weight = 0
-                if feature in document_set[index][0] and document_set[index][1] == cl:
+                if feature in document[0] and document[1] == cl:
                     feature_weight = 1
                 tmp *= (normalizing_param[feature] ** feature_weight)
             Z += tmp
@@ -148,12 +135,24 @@ class MaxEnt:
         classes = ['positive', 'negative']
         for cl in classes:
             for index in range(0,len(document_set)):
+                #print(sumVal)
                 sumVal += document_set[index][2][cl] * (1 if feature in document_set[index][0] and document_set[index][1] == cl else 0)
         return sumVal
+    
+    @staticmethod
+    def test(normalizing_param, feature_list, cl, document):
+        prob = 1
+        for feature in feature_list:
+            prob *= normalizing_param[feature] ** (1 if feature in document[0] and document[1] == cl else 0)
+        return prob / MaxEnt.calculate_Norm_Constant(['positive', 'negative'], feature_list, document, normalizing_param)
+            
                 
                     
                     
 feature_list, document_list = movie_reader.read_dir('/home/jmkovachi/sent-classifier/movie_reviews/txt_sentoken/')
 
-MaxEnt.train(feature_list, document_list, ('positive', 'negative'))
+print(feature_list)
+normalizing_param = MaxEnt.train(feature_list, document_list, ('positive', 'negative'))
+
+
             
