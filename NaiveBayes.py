@@ -10,9 +10,10 @@ import math
 from read_MPQA import extract_MPQA as MPQA
 from nltk.stem import WordNetLemmatizer
 from nltk import tokenize
+import nltk
 from sklearn.metrics import precision_recall_fscore_support as score
 from read_movie_reviews import read_Movies as movie_reader
-
+from collections import Counter
 
 class MN_NaiveBayes:
 
@@ -27,6 +28,7 @@ class MN_NaiveBayes:
         self.pos_count = MPQA.count(pos)
         self.neg_count = MPQA.count(neg)
         self.doc_count = self.pos_count + self.neg_count # + self.neu_count
+        self.tie_count = 0
         self.pos = pos
         self.neg = neg
 
@@ -67,9 +69,17 @@ class MN_NaiveBayes:
     return: A two-tuple with the classification decision and its corresponding
     log-space probability.
     """
-    def test(self, document):
+    def test(self, document, POS=False):
         wordnet_lemmatizer = WordNetLemmatizer()
+        
         document = [wordnet_lemmatizer.lemmatize(x) for x in document.split(" ")]
+        #print(document)
+        if POS:
+            document = nltk.pos_tag(document)
+            #print(document)
+            document = [str(word[0] + '-' + word[1]) for word in document]
+            #document = [str(nltk.pos_tag(word)[0][1] + '-' + nltk.pos_tag(word)[1]) for word in document]
+        
         pos_val = self.priorLogPos
         neg_val = self.priorLogNeg
         
@@ -107,6 +117,7 @@ class MN_NaiveBayes:
         #elif neutral_val > pos_val and neutral_val > neg_val:
             #return ('neutral', neutral_val)
         else:
+            self.tie_count += 1
             return ('positive', pos_val)
         
         
@@ -114,20 +125,28 @@ class MN_NaiveBayes:
     Downloads an article from NYT to use for testing.
     """
     @staticmethod
-    def eval(domain, obj, text='', newspaper=False, pos_test_docs = [], neg_test_docs = []):
+    def eval(domain, obj, text='', newspaper=False, pos_test_docs = [], neg_test_docs = [], POS=False):
         if not newspaper:                     
                 annotated_array = []
                 predicted_array = []
                 for doc in pos_test_docs:
                     for sentence in tokenize.sent_tokenize(doc):
-                        outcome = obj.test(sentence)
+                        try:
+                            outcome = obj.test(sentence, POS=POS)
+                        except Exception as e:
+                            print('bad input: ' + sentence)
+                            continue
                         annotated_array.append(0)
                         predicted_array.append(0 if outcome[0] == 'positive' else 1)
                 
                 print(len(neg_test_docs))
                 for doc in neg_test_docs:
                     for sentence in tokenize.sent_tokenize(doc):
-                        outcome = obj.test(sentence)
+                        try:
+                            outcome = obj.test(sentence, POS=POS)
+                        except Exception as e:
+                            print('bad input: ' + sentence)
+                            continue
                         annotated_array.append(1)
                         predicted_array.append(1 if outcome[0] == 'negative' else 0)
                         
@@ -200,7 +219,23 @@ class MN_NaiveBayes:
         print('recall: {}'.format(recall))
         print('fscore: {}'.format(fscore))
         print('support: {}'.format(support))
+        
+    @staticmethod    
+    def count_POS(words):
+        cnt_pos = Counter()
+        cnt_neg = Counter()
+        #print(words)
+        pos = [str(word[0][0] + '-' + word[0][1]) for word in words if word[1] == 'positive']
+        
+        neg = [str(word[0][0] + '-' + word[0][1]) for word in words if word[1] == 'negative']
+        
+        for word in pos:
+            cnt_pos[word] += 1
             
+        for word in neg:
+            cnt_neg[word] += 1
+            
+        return cnt_pos, cnt_neg
         
     
         
@@ -208,11 +243,17 @@ class MN_NaiveBayes:
 mpqa = MPQA()
 
 
-pol_list, sent_list, pos_test_docs, neg_test_docs = movie_reader.read_for_bayes('/home/jmkovachi/sent-classifier/movie_reviews/txt_sentoken/')
+#pol_list, sent_list, pos_test_docs, neg_test_docs = movie_reader.read_for_bayes('/home/jmkovachi/sent-classifier/movie_reviews/txt_sentoken/')
 
 
 
-pos, neg = mpqa.build_counts(pol_list, sent_list)
+#pos, neg = mpqa.build_counts(pol_list, sent_list)
+
+words, pos_test_docs, neg_test_docs = movie_reader.tag_dir('/home/jmkovachi/sent-classifier/movie_reviews/txt_sentoken/')
+
+#print(words)
+
+pos, neg = MN_NaiveBayes.count_POS(words)
 
 NB = MN_NaiveBayes(pos, neg)
 
@@ -220,4 +261,6 @@ NB.train()
 
 
 # The first couple parameters below are irrelevant
-NB.eval("irrelevant", NB, text='', newspaper=False, pos_test_docs=pos_test_docs, neg_test_docs=neg_test_docs)
+NB.eval("irrelevant", NB, text='', newspaper=False, pos_test_docs=pos_test_docs, neg_test_docs=neg_test_docs, POS=True)
+
+print(NB.tie_count)

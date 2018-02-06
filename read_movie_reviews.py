@@ -19,7 +19,7 @@ class read_Movies:
         
         doc_list = []
         
-        base_dir = '/home/jmkovachi/sent-classifier/movie_reviews/txt_sentoken/'
+        #base_dir = '/home/jmkovachi/sent-classifier/movie_reviews/txt_sentoken/'
         
         stops = set(stopwords.words('english'))
         print(stops)
@@ -54,11 +54,62 @@ class read_Movies:
         feature_list = FreqDist(feature_list)
         
         new_list = []
-        for word, frequency in feature_list.most_common(30):
+        for word, frequency in feature_list.most_common(5000):
             new_list.append(word)
             
         return list(set(new_list)), doc_list
     
+    def tag_dir(base_dir):
+        #stops = set(stopwords.words('english'))
+        words = []
+        pos_index_count = 0
+        test_docs_pos = []
+        for pos in os.listdir(base_dir + 'pos'):
+            file = open(base_dir + 'pos/' + pos)
+            text = file.read()
+            if pos_index_count / len(os.listdir(base_dir + 'pos')) > .75:
+                test_docs_pos.append(text)
+                continue
+            pos_index_count += 1
+            for sentence in nltk.sent_tokenize(text):
+                #print(sentence)
+                #print(nltk.pos_tag(['wow']))
+                split_sentence = [nltk.pos_tag([word]) for word in nltk.word_tokenize(sentence)]
+                for word in split_sentence:
+                    #print(word[0])
+                    if "\n" in word:
+                        word = word.replace('\n','')
+                    elif word == '' or word == '!' or word == ';' or word == '?' or word == ';':
+                        continue
+                    #feature_list.append(word)
+                    #print(word)
+                    words.append((word[0], 'positive'))    
+                
+                #doc_list.append([set(split_sentence), 'positive', {'positive' : 1, 'negative' : 1}])
+               
+        print('halfway')
+        neg_index_count = 0
+        test_docs_neg = []
+        for neg in os.listdir(base_dir + 'neg'):
+            file = open(base_dir + 'neg/' + neg)
+            text = file.read()
+            if neg_index_count / len(os.listdir(base_dir + 'neg')) > .75:
+                test_docs_neg.append(text)
+                continue
+            neg_index_count += 1
+            for sentence in nltk.sent_tokenize(text):
+                split_sentence = [nltk.pos_tag([word]) for word in nltk.word_tokenize(sentence)]
+                for word in split_sentence:
+                    if "\n" in word:
+                        word = word.replace('\n','')
+                    elif word == '' or word == '!' or word == ';' or word == '?' or word == ';':
+                        continue 
+                    #feature_list.append(word)
+                    words.append((word[0], 'negative'))
+               # doc_list.append([set(sentence.split(' ')), 'negative', {'positive' : 1, 'negative' : 1}])
+        
+        return words, test_docs_pos, test_docs_neg
+
     @staticmethod
     def read_for_bayes(base_dir):
         pos_list = []
