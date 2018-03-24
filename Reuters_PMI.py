@@ -20,12 +20,6 @@ class McDonald_Word_List:
                   len(self.neg_words)))
 
 
-# In[ ]:
-
-
-
-
-
 # We will now read Bill McDonald's Excel file containing the master dictionary of financial sentiment words.
 # For this task, I am using the xlrd library. For now, I am only reading the cell values that have words with positive or negative sentiment.
 
@@ -37,7 +31,7 @@ FORMAT = ['Positive', 'Negative']
 values = ""
 
 wb = open_workbook('McDonaldDict.xlsx')
-
+print('Getting polarity lists...')
 values = []
 for s in wb.sheets():
     #print 'Sheet:',s.name
@@ -49,7 +43,7 @@ for s in wb.sheets():
         col_value = []
         word = s.cell(row, 0).value
         for name, col in zip(col_names, range(1,s.ncols)):
-            value  = (s.cell(row,col).value)
+            value = (s.cell(row,col).value)
             if name.value == 'Positive' and int(value) > 0:
                 pos[word] = int(value)
             elif name.value == 'Negative' and int(value) > 0:
@@ -62,20 +56,19 @@ print(mcd.pos_words)
 
 # Voila. We have our lists of positive and negative words generated. These words were annotated for the financial domain and will be what we use to analyze our pointwise mutual information across the corpus.
 
-# In[ ]:
+# In[5]:
 
 
-
-
-
-# In[ ]:
-
-
-import os
 import re
-path = os.getcwd()
+
+
+# We will use the method below to extract header information from the news article. Additionally, we get rid of the miscellaneous header text in order to extract text more precisely.
+
+# In[6]:
+
 
 def extract_header(text):
+    print('hi')
     search = re.search('--(.+?)--(.+?)--(.+?)--(.+?)Reuters\)\s-', text, flags=re.DOTALL)
     text = re.sub('--.+?--.+?--.+?--.+?Reuters\)\s-', '', text)
     title = search.group(1)
@@ -83,13 +76,31 @@ def extract_header(text):
     date = search.group(3)
     link = search.group(4)
     return title, author, date, link, text
-    
+
+
+# In[9]:
+
+
+import os
+
+path = os.getcwd() 
 
 reuters_folders = os.listdir('/home/jmkovachi/Documents/jupyter_notebooks/reuters')[0:10]
 
 path += '/reuters'
 
 articles = []
+
+
+# In[10]:
+
+
+print(reuters_folders)
+
+
+# In[ ]:
+
+
 for folder in reuters_folders:
     article_files = os.listdir(path + '/' + folder)
     for file in article_files:
@@ -102,23 +113,13 @@ for folder in reuters_folders:
 
 # We use this code above to open up our Reuters folder and read the files from our directory. The data being used here comes from this repository [financial news corpus](https://github.com/philipperemy/financial-news-dataset). It is pretty great. 
 
-# In[ ]:
+# In[9]:
 
 
-import requests
-
-data = [
-  ('pfreq', '1'),
-  ('apikey', 'aikiz3Bel9'),
-  ('nex', '1'),
-  ('url', 'https://raw.githubusercontent.com/philipperemy/financial-news-dataset/master/ReutersNews106521/20061020/businesspro-google-dc-idUSN2036351320061020'),
-]
-
-response = requests.post('http://cyn.io/api/', data=data)
-#print(response.text)
+import nltk
 
 
-# In[ ]:
+# In[10]:
 
 
 from nltk.chunk import conlltags2tree, tree2conlltags
@@ -156,6 +157,12 @@ print(mcd.pos_words)
 # In[ ]:
 
 
+import math
+
+
+# In[ ]:
+
+
 def num_words(sentences):
     l = 0
     pos_count = 0
@@ -181,11 +188,8 @@ def compute_PMI(class1, class2, int_c1c2, overall_count):
 # In[ ]:
 
 
-import nltk
-import math
 import pandas as pd
 import numpy as np
-
 
 length = 0
 overall_pos = 0
@@ -196,6 +200,13 @@ intersection_neg = 0
 
 pos_df = pd.DataFrame(0, index=[str(key) for (key,val) in mcd.pos_words.items()], columns=[])
 neg_df = pd.DataFrame(0, index=[str(key) for (key,val) in mcd.neg_words.items()], columns=[])
+
+
+# These pandas dataframes will allow us to represent co-occurences of organizations and polarity words as a matrix. Initially, dataframes are initialized as 0 column matrices with row indexes as the words from the positive and negative financial polarity lists.
+
+# In[ ]:
+
+
 for article in articles[:1000]:
     sentences = nltk.sent_tokenize(article.text)
     tmpL, tmp_pos, tmp_neg = num_words(sentences)
