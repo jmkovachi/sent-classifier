@@ -22,7 +22,8 @@ def correct_date_format(string):
 
     """
     print(string)
-    string = re.sub(r'\s(\d),', r' 0\1', string)
+    string = re.sub(r'\s(\d),', r' 0\1,', string)
+    string = string.replace(',','')
     string = re.sub(r'\s(\d):(\d\d)', r' 0\1:\2', string)
     t = time.strptime(string, '%a %b %d %Y %H:%M%p %Z')
     t = time.strftime('%Y-%m-%dT%Hh%Mm%S', t)
@@ -36,7 +37,7 @@ def extract_header(text):
     return: title, author, date, link to article, and body of text
     """
     search = re.search('--(.+?)\n--(.+?)\n--(.+?)\n--(.+?)\n.+?Reuters\)\s-', text, flags=re.DOTALL)
-    text = re.sub('--.+?--.+?--.+?--.+?Reuters\)\s-', '', text, flags=re.DOTALL)
+    text = re.sub('^--.+?Reuters\)\s-', '', text, flags=re.DOTALL)
     title = search.group(1)
     author = re.sub('By\s', '', search.group(2))
     date = correct_date_format(codecs.getdecoder('unicode_escape')(search.group(3))[0].replace('\n','').strip())
@@ -52,18 +53,37 @@ def read_and_index():
     reuters_folders = os.listdir('/home/jmkovachi/Documents/jupyter_notebooks/reuters')
     path += '/reuters'
     id = 1
+    error_count = 0
     for folder in reuters_folders:
-        article_files = os.listdir(path + '/' + folder)
+        try:
+            article_files = os.listdir(path + '/' + folder)
+        except Exception as e:
+            print(e)
+            print(article_files)
+            error_count += 1
+            continue
         for file in article_files:
-            with open(path + '/' + folder + '/' + file) as f:
-                raw_text = f.read()
-                title, author, date, link, text = extract_header(raw_text)
-                es.index(index='articles', doc_type='article' id=id, body={'title' : codecs.getdecoder('unicode_escape')(title)[0].replace('\n','').strip(),
-                                                                            'author' : author.replace('\n','').strip(), 
-                                                                            'date' : date,
-                                                                            'link' : link.replace('\n','').strip(),
-                                                                            'text' : codecs.getdecoder('unicode_escape')(text)[0].replace('\n','').strip()})
-                id += 1
+            try:
+                with open(path + '/' + folder + '/' + file) as f:
+                    raw_text = f.read()
+                    try:
+                        title, author, date, link, text = extract_header(raw_text)
+                    except Exception as e:
+                        print(text)
+                        print(e)
+                        error_count += 1
+                        continue
+                    es.index(index='articles', doc_type='article', id=id, body={'title' : codecs.getdecoder('unicode_escape')(title)[0].replace('\n','').strip(),
+                                                                                'author' : author.replace('\n','').strip(), 
+                                                                                'date' : date,
+                                                                                'link' : link.replace('\n','').strip(),
+                                                                                'text' : codecs.getdecoder('unicode_escape')(text)[0].replace('\n','').strip()})
+                    id += 1
+            except Exception as e:
+                print(e)
+                error_count += 1
+ 
+    print(error_count)
 
 
 if __name__ == "__main__":

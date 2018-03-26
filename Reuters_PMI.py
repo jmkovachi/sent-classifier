@@ -320,7 +320,7 @@ plt.figure(figsize=(20, 3))  # width:20, height:3
 # save the names and their respective scores separately
 # reverse the tuples to go from most frequent to least frequent 
 plt.bar(range(len(sorted_counts[0:20])), PMIs, align='edge', width=.3)
-plt.xticks(range(len(sorted_counts[0:20])), [val[0] for val in sorted_count[:20]])
+plt.xticks(range(len(sorted_counts[0:20])), [val[0] for val in sorted_counts[:20]])
 plt.xticks(rotation=70)
 plt.show()
 
