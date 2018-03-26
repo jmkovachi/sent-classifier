@@ -9,6 +9,7 @@ class McDonald_Word_List:
     def __init__(self, pos_words, neg_words):
         self.pos_words = {}
         self.neg_words = {}
+        self.getWB()
         self.pos_word_counts = {word:0 for word, val in self.pos_words.items()}
         self.intersection_pos = {word:0 for word, val in self.pos_words.items()}
         self.neg_word_counts = {word:0 for word, val in self.neg_words.items()}
@@ -57,6 +58,67 @@ class McDonald_Word_List:
                     neg_count += 1
         return l, pos_count, neg_count
 
+    def compute_calculations(self, articles):
+        length = 0
+        overall_pos = 0
+        overall_neg = 0
+        overall_org = 0
+        intersection_pos = 0
+        intersection_neg = 0
+
+        self.pos_df = pd.DataFrame(0, index=[str(key) for (key,val) in self.pos_words.items()], columns=[])
+        self.neg_df = pd.DataFrame(0, index=[str(key) for (key,val) in self.neg_words.items()], columns=[])
+
+
+        for article in articles:
+            sentences = nltk.sent_tokenize(article.text)
+            tmpL, tmp_pos, tmp_neg = self.num_words(sentences)
+            length += tmpL
+            overall_pos += tmp_pos
+            overall_neg += tmp_neg
+            for sent in sentences:
+                org_count = 0
+                pos_count = 0
+                neg_count = 0
+                org_list = []
+                chunks = [chunk for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(sent)))]
+                for chunk in chunks:
+                        if hasattr(chunk, 'label') and str(chunk.label()) == 'ORGANIZATION':
+                            #print(chunk.label())
+                            org_count += 1
+                            overall_org += 1
+                            org_list.append(str(chunk[0]).upper())
+                            if str(chunk[0]).upper() not in self.pos_df.columns:
+                                print(str(chunk[0]).upper())
+                                self.pos_df[str(chunk[0]).upper()] = np.zeros(len(self.pos_df.index))
+                                self.neg_df[str(chunk[0]).upper()] = np.zeros(len(self.neg_df.index))
+                            
+                tmp_org_count = org_count
+                for chunk in chunks:
+                        #print(chunk[0])
+                        #print(mcd.pos_words)
+                        if str(chunk[0]).upper() in self.pos_words:
+                            tmp_org_list = org_list
+                            #print(chunk[0])
+                            pos_org_count = tmp_org_count
+                            while len(tmp_org_list) > 0:
+                                pos_count += 1
+                                self.pos_df.at[str(chunk[0]).upper(), tmp_org_list[0]] += 1
+                                tmp_org_list.pop(0)
+                                self.intersection_pos[str(chunk[0]).upper()] += 1
+                            self.pos_word_counts[str(chunk[0]).upper()] += 1
+                        elif str(chunk[0]).upper() in self.neg_words:
+                            #print(chunk[0])
+                            tmp_org_list = org_list  
+                            while(len(tmp_org_list) > 0):
+                                neg_count += 1
+                                self.neg_df.at[str(chunk[0]).upper(), tmp_org_list[0]] += 1
+                                tmp_org_list.pop(0)
+                                self.intersection_neg[str(chunk[0]).upper()] += 1
+                            self.neg_word_counts[str(chunk[0]).upper()] += 1
+            intersection_pos += org_count if org_count < pos_count else pos_count
+            intersection_neg += org_count if org_count < neg_count else neg_count
+            
     @staticmethod
     def extract_header(text):
         search = re.search('--(.+?)--(.+?)--(.+?)--(.+?)Reuters\)\s-', text, flags=re.DOTALL)
@@ -76,70 +138,11 @@ class McDonald_Word_List:
 
 
 
-length = 0
-overall_pos = 0
-overall_neg = 0
-overall_org = 0
-intersection_pos = 0
-intersection_neg = 0
 
-pos_df = pd.DataFrame(0, index=[str(key) for (key,val) in mcd.pos_words.items()], columns=[])
-neg_df = pd.DataFrame(0, index=[str(key) for (key,val) in mcd.neg_words.items()], columns=[])
-
-
-for article in articles[:1000]:
-    sentences = nltk.sent_tokenize(article.text)
-    tmpL, tmp_pos, tmp_neg = num_words(sentences)
-    length += tmpL
-    overall_pos += tmp_pos
-    overall_neg += tmp_neg
-    for sent in sentences:
-       org_count = 0
-       pos_count = 0
-       neg_count = 0
-       org_list = []
-       chunks = [chunk for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(sent)))]
-       for chunk in chunks:
-            if hasattr(chunk, 'label') and str(chunk.label()) == 'ORGANIZATION':
-                #print(chunk.label())
-                org_count += 1
-                overall_org += 1
-                org_list.append(str(chunk[0]).upper())
-                if str(chunk[0]).upper() not in pos_df.columns:
-                    print(str(chunk[0]).upper())
-                    pos_df[str(chunk[0]).upper()] = np.zeros(len(pos_df.index))
-                    neg_df[str(chunk[0]).upper()] = np.zeros(len(neg_df.index))
-                
-       tmp_org_count = org_count
-       for chunk in chunks:
-            #print(chunk[0])
-            #print(mcd.pos_words)
-            if str(chunk[0]).upper() in mcd.pos_words:
-                tmp_org_list = org_list
-                #print(chunk[0])
-                pos_org_count = tmp_org_count
-                while len(tmp_org_list) > 0:
-                    pos_count += 1
-                    pos_df.at[str(chunk[0]).upper(), tmp_org_list[0]] += 1
-                    tmp_org_list.pop(0)
-                    mcd.intersection_pos[str(chunk[0]).upper()] += 1
-                mcd.pos_word_counts[str(chunk[0]).upper()] += 1
-            elif str(chunk[0]).upper() in mcd.neg_words:
-                #print(chunk[0])
-                tmp_org_list = org_list  
-                while(len(tmp_org_list) > 0):
-                    neg_count += 1
-                    neg_df.at[str(chunk[0]).upper(), tmp_org_list[0]] += 1
-                    tmp_org_list.pop(0)
-                    mcd.intersection_neg[str(chunk[0]).upper()] += 1
-                mcd.neg_word_counts[str(chunk[0]).upper()] += 1
-       intersection_pos += org_count if org_count < pos_count else pos_count
-       intersection_neg += org_count if org_count < neg_count else neg_count
-    
-print(compute_PMI(overall_pos, overall_org, intersection_pos, l))
+"""print(compute_PMI(overall_pos, overall_org, intersection_pos, l))
 print(compute_PMI(overall_neg, overall_org, intersection_neg, l))
 #print(mcd.pos_word_counts)
-print(pos_df)
+print(pos_df)"""
 
 import numpy as np
 import matplotlib.pyplot as plt
