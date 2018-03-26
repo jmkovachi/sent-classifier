@@ -91,11 +91,14 @@ def read_company_list():
     with open('WIKI-datasets-codes.csv', 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
+            if 'Untitled' in row[1]:
+                continue
             abbrev = row[0]
             title = row[1]
             abbrev = re.sub('WIKI/', '', abbrev, flags=re.DOTALL)
             title = re.sub('\sPrices.*', '', title[1:], flags=re.DOTALL)
             print('{}, {}'.format(abbrev, title))
+            es.index(index='companies', doc_type='company', body={ 'code' : row[0], 'title' : row[1]})
 
 if __name__ == "__main__":
     read_company_list()
