@@ -4,8 +4,11 @@ import nltk
 import math
 import pandas as pd
 import numpy as np
+from elasticsearch import Elasticsearch
+es = Elasticsearch()
 
 class McDonald_Word_List:
+
     def __init__(self, pos_words, neg_words):
         self.pos_words = {}
         self.neg_words = {}
@@ -62,7 +65,7 @@ class McDonald_Word_List:
         length = 0
         overall_pos = 0
         overall_neg = 0
-        overall_org = 0
+        self.overall_org = 0
         intersection_pos = 0
         intersection_neg = 0
 
@@ -86,7 +89,7 @@ class McDonald_Word_List:
                         if hasattr(chunk, 'label') and str(chunk.label()) == 'ORGANIZATION':
                             #print(chunk.label())
                             org_count += 1
-                            overall_org += 1
+                            self.overall_org += 1
                             org_list.append(str(chunk[0]).upper())
                             if str(chunk[0]).upper() not in self.pos_df.columns:
                                 print(str(chunk[0]).upper())
@@ -119,6 +122,46 @@ class McDonald_Word_List:
             intersection_pos += org_count if org_count < pos_count else pos_count
             intersection_neg += org_count if org_count < neg_count else neg_count
             
+    def find_incident_orgs(title):
+        chunks = [chunk for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(title)))]
+        for chunk in chunks:
+            
+
+    
+    def visualize(self):
+        """print(compute_PMI(overall_pos, overall_org, intersection_pos, l))
+        print(compute_PMI(overall_neg, overall_org, intersection_neg, l))
+        #print(mcd.pos_word_counts)
+        print(pos_df)"""
+        import matplotlib.pyplot as plt
+
+        sorted_counts = sorted(self.pos_word_counts.items(), key=lambda kv: kv[1], reverse=True)
+        print(sorted_counts)
+        print(sorted_counts[50][0])
+        print(self.intersection_pos[sorted_counts[50][0]])
+        print(McDonald_Word_List.compute_PMI(sorted_counts[100][1], self.overall_org, self.intersection_pos[sorted_counts[100][0]], l))
+
+        sorted_counts[0:50]
+
+        plt.figure(figsize=(20, 3))  # width:20, height:3
+        # save the names and their respective scores separately
+        # reverse the tuples to go from most frequent to least frequent 
+        plt.bar(range(len(sorted_counts[0:20])), [val[1] for val in sorted_counts[0:20]], align='edge', width=.3)
+        plt.xticks(range(len(sorted_counts[0:20])), [val[0] for val in sorted_counts[:20]])
+        plt.xticks(rotation=70)
+        plt.show()
+
+
+        PMIs = [McDonald_Word_List.compute_PMI(count[1], self.overall_org, self.intersection_pos[count[0]], l) for count in sorted_counts[0:20]]
+
+        plt.figure(figsize=(20, 3))  # width:20, height:3
+        # save the names and their respective scores separately
+        # reverse the tuples to go from most frequent to least frequent 
+        plt.bar(range(len(sorted_counts[0:20])), PMIs, align='edge', width=.3)
+        plt.xticks(range(len(sorted_counts[0:20])), [val[0] for val in sorted_counts[:20]])
+        plt.xticks(rotation=70)
+        plt.show()
+    
     @staticmethod
     def extract_header(text):
         search = re.search('--(.+?)--(.+?)--(.+?)--(.+?)Reuters\)\s-', text, flags=re.DOTALL)
@@ -139,40 +182,7 @@ class McDonald_Word_List:
 
 
 
-"""print(compute_PMI(overall_pos, overall_org, intersection_pos, l))
-print(compute_PMI(overall_neg, overall_org, intersection_neg, l))
-#print(mcd.pos_word_counts)
-print(pos_df)"""
 
-import numpy as np
-import matplotlib.pyplot as plt
-
-sorted_counts = sorted(mcd.pos_word_counts.items(), key=lambda kv: kv[1], reverse=True)
-print(sorted_counts)
-print(sorted_counts[50][0])
-print(mcd.intersection_pos[sorted_counts[50][0]])
-print(compute_PMI(sorted_counts[100][1], overall_org, mcd.intersection_pos[sorted_counts[100][0]], l))
-
-sorted_counts[0:50]
-
-plt.figure(figsize=(20, 3))  # width:20, height:3
-# save the names and their respective scores separately
-# reverse the tuples to go from most frequent to least frequent 
-plt.bar(range(len(sorted_counts[0:20])), [val[1] for val in sorted_counts[0:20]], align='edge', width=.3)
-plt.xticks(range(len(sorted_counts[0:20])), [val[0] for val in sorted_counts[:20]])
-plt.xticks(rotation=70)
-plt.show()
-
-
-PMIs = [compute_PMI(count[1], overall_org, mcd.intersection_pos[count[0]], l) for count in sorted_counts[0:20]]
-
-plt.figure(figsize=(20, 3))  # width:20, height:3
-# save the names and their respective scores separately
-# reverse the tuples to go from most frequent to least frequent 
-plt.bar(range(len(sorted_counts[0:20])), PMIs, align='edge', width=.3)
-plt.xticks(range(len(sorted_counts[0:20])), [val[0] for val in sorted_counts[:20]])
-plt.xticks(rotation=70)
-plt.show()
 
 
 
