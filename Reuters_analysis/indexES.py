@@ -1,4 +1,5 @@
 import re
+import csv
 from elasticsearch import Elasticsearch
 import time
 import os
@@ -36,10 +37,10 @@ def extract_header(text):
     @param text: Article text to be extracted
     return: title, author, date, link to article, and body of text
     """
-    search = re.search('--(.+?)\n--(.+?)\n--(.+?)\n--(.+?)\n.+?Reuters\)\s-', text, flags=re.DOTALL)
-    text = re.sub('^--.+?Reuters\)\s-', '', text, flags=re.DOTALL)
+    search = re.search(r'--(.+?)\n--(.+?)\n--(.+?)\n--(.+?)\n.+?Reuters\)\s-', text, flags=re.DOTALL)
+    text = re.sub(r'^--.+?Reuters\)\s-', '', text, flags=re.DOTALL)
     title = search.group(1)
-    author = re.sub('By\s', '', search.group(2))
+    author = re.sub(r'By\s', '', search.group(2))
     date = correct_date_format(codecs.getdecoder('unicode_escape')(search.group(3))[0].replace('\n','').strip())
     link = search.group(4)
     return title, author, date, link, text
@@ -86,8 +87,6 @@ def read_and_index():
     print(error_count)
 
 def read_company_list():
-    import csv
-    import re
     with open('WIKI-datasets-codes.csv', 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
@@ -95,10 +94,10 @@ def read_company_list():
                 continue
             abbrev = row[0]
             title = row[1]
-            abbrev = re.sub('WIKI/', '', abbrev, flags=re.DOTALL)
-            title = re.sub('\sPrices.*', '', title[1:], flags=re.DOTALL)
+            abbrev = re.sub(r'WIKI/', '', abbrev, flags=re.DOTALL)
+            title = re.sub(r'\sPrices.*', '', title[1:], flags=re.DOTALL)
             print('{}, {}'.format(abbrev, title))
-            es.index(index='companies', doc_type='company', body={ 'code' : row[0], 'title' : row[1]})
+            es.index(index='companies', doc_type='company', body={ 'code' : abbrev, 'title' : title})
 
 if __name__ == "__main__":
     read_company_list()

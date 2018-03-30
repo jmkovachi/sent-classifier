@@ -102,8 +102,8 @@ class McDonald_Word_List:
                         #print(mcd.pos_words)
                         if str(chunk[0]).upper() in self.pos_words:
                             tmp_org_list = org_list
-                            #print(chunk[0])
-                            pos_org_count = tmp_org_count
+                            
+                            
                             while len(tmp_org_list) > 0:
                                 pos_count += 1
                                 self.pos_df.at[str(chunk[0]).upper(), tmp_org_list[0]] += 1
@@ -122,9 +122,8 @@ class McDonald_Word_List:
             intersection_pos += org_count if org_count < pos_count else pos_count
             intersection_neg += org_count if org_count < neg_count else neg_count
             
-    def find_incident_orgs(title):
-        chunks = [chunk for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(title)))]
-        for chunk in chunks:
+
+  
             
 
     
@@ -164,8 +163,8 @@ class McDonald_Word_List:
     
     @staticmethod
     def extract_header(text):
-        search = re.search('--(.+?)--(.+?)--(.+?)--(.+?)Reuters\)\s-', text, flags=re.DOTALL)
-        text = re.sub('--.+?--.+?--.+?--.+?Reuters\)\s-', '', text)
+        search = re.search(r'--(.+?)--(.+?)--(.+?)--(.+?)Reuters\)\s-', text, flags=re.DOTALL)
+        text = re.sub(r'--.+?--.+?--.+?--.+?Reuters\)\s-', '', text)
         title = search.group(1)
         author = search.group(2)
         date = search.group(3)
@@ -177,9 +176,23 @@ class McDonald_Word_List:
         return math.log((int_c1c2+1/overall_count)/((class1+1/overall_count)*(class2+1/overall_count)))
         # +1s added for smoothing
 
+def find_incident_orgs(title):
+    chunks = [chunk for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(title)))]
+    for chunk in chunks:
+        print(chunk)
+        if hasattr(chunk, 'label'):
+            print('a'. join(c[0] for c in chunk))
+            query = {
+                "query": {
+                    "match": {
+                        "title": ' '.join(c[0] for c in chunk)
+                    }
+                }
+            }
+            res = es.search(index='companies', doc_type='company', body=query)
+            print(res['hits'])
 
-
-
+find_incident_orgs('Google profit beats expectations')
 
 
 
