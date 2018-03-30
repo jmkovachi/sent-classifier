@@ -59,7 +59,7 @@ class read_Movies:
             
         return list(set(new_list)), doc_list
     
-    def tag_dir(base_dir):
+    def tag_dir(self, base_dir):
         #stops = set(stopwords.words('english'))
         words = []
         pos_index_count = 0
