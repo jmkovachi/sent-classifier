@@ -5,11 +5,35 @@ import math
 import pandas as pd
 import numpy as np
 from elasticsearch import Elasticsearch
+from QuandlWrapper import QuandlWrapper
+from QueryES import QueryES
 es = Elasticsearch()
+queryES = QueryES()
+quandl = QuandlWrapper()
+
+
+def find_incident_orgs(title):
+    chunks = [chunk for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(title)))]
+    for chunk in chunks:
+        #print(chunk)
+        if hasattr(chunk, 'label'):
+            #print('a'. join(c[0] for c in chunk))
+            query = {
+                "query": {
+                    "match": {
+                        "title": ' '.join(c[0] for c in chunk)
+                    }
+                }
+            }
+            res = es.search(index='companies', doc_type='company', body=query)
+            if res['hits']['total'] > 0:
+                return res['hits']['hits'][0]['_source']['code']
+    return 'Nothing'
+
 
 class McDonald_Word_List:
 
-    def __init__(self, pos_words, neg_words):
+    def __init__(self):
         self.pos_words = {}
         self.neg_words = {}
         self.getWB()
@@ -72,9 +96,37 @@ class McDonald_Word_List:
         self.pos_df = pd.DataFrame(0, index=[str(key) for (key,val) in self.pos_words.items()], columns=[])
         self.neg_df = pd.DataFrame(0, index=[str(key) for (key,val) in self.neg_words.items()], columns=[])
 
-
+        no_true = 0
+        no_lex_true = 0
+        no_false = 0
+        no_lex_false = 0
         for article in articles:
-            sentences = nltk.sent_tokenize(article.text)
+            article = article['_source']
+            sentences = nltk.sent_tokenize(article['text'])
+            orgs = find_incident_orgs(article['title'])
+            try:
+                
+                print(orgs)
+                if orgs == 'Nothing':
+                    continue
+                else:
+                    count, num_pos, num_neg = self.num_words(nltk.sent_tokenize(article['text']))
+                    result = quandl.classification_decision(article['text'], orgs, article['date'], num_pos, num_neg)
+                    print(article['title'])
+                    if result[0]:
+                        no_true += 1
+                    elif not result[0]:
+                        no_false += 1
+                    if result[1]:
+                        no_lex_true += 1
+                    elif not result[1]:
+                        no_lex_false += 1
+                    print('Num true : {}, Num false : {}, Num lex true : {}, Num lex false: {}'.format(no_true, no_false, no_lex_true, no_lex_false))
+                    continue
+
+            except Exception as e:
+                print(e)
+                continue
             tmpL, tmp_pos, tmp_neg = self.num_words(sentences)
             length += tmpL
             overall_pos += tmp_pos
@@ -92,7 +144,7 @@ class McDonald_Word_List:
                             self.overall_org += 1
                             org_list.append(str(chunk[0]).upper())
                             if str(chunk[0]).upper() not in self.pos_df.columns:
-                                print(str(chunk[0]).upper())
+                                #print(str(chunk[0]).upper())
                                 self.pos_df[str(chunk[0]).upper()] = np.zeros(len(self.pos_df.index))
                                 self.neg_df[str(chunk[0]).upper()] = np.zeros(len(self.neg_df.index))
                             
@@ -122,10 +174,6 @@ class McDonald_Word_List:
             intersection_pos += org_count if org_count < pos_count else pos_count
             intersection_neg += org_count if org_count < neg_count else neg_count
             
-
-  
-            
-
     
     def visualize(self):
         """print(compute_PMI(overall_pos, overall_org, intersection_pos, l))
@@ -176,23 +224,12 @@ class McDonald_Word_List:
         return math.log((int_c1c2+1/overall_count)/((class1+1/overall_count)*(class2+1/overall_count)))
         # +1s added for smoothing
 
-def find_incident_orgs(title):
-    chunks = [chunk for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(title)))]
-    for chunk in chunks:
-        print(chunk)
-        if hasattr(chunk, 'label'):
-            print('a'. join(c[0] for c in chunk))
-            query = {
-                "query": {
-                    "match": {
-                        "title": ' '.join(c[0] for c in chunk)
-                    }
-                }
-            }
-            res = es.search(index='companies', doc_type='company', body=query)
-            print(res['hits'])
 
-find_incident_orgs('Google profit beats expectations')
+articles = queryES.query()
+mcd = McDonald_Word_List()
+mcd.compute_calculations(articles)
+
+
 
 
 

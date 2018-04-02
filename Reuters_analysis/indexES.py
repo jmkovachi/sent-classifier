@@ -1,12 +1,15 @@
 import re
 import csv
 from elasticsearch import Elasticsearch
-import time
+import datetime
 import os
 import codecs
+from pymongo import MongoClient
+import pymongo
 es = Elasticsearch()
-
-
+#client = MongoClient()
+client = MongoClient("mongodb://127.0.0.1:27018")
+db = client['primer']
 
 def correct_date_format(string):
     """
@@ -26,31 +29,34 @@ def correct_date_format(string):
     string = re.sub(r'\s(\d),', r' 0\1,', string)
     string = string.replace(',','')
     string = re.sub(r'\s(\d):(\d\d)', r' 0\1:\2', string)
-    t = time.strptime(string, '%a %b %d %Y %H:%M%p %Z')
-    t = time.strftime('%Y-%m-%dT%Hh%Mm%S', t)
-    return t
+    
+    time = datetime.datetime.strptime(string, '%a %b %d %Y %H:%M%p %Z')
+    format_time = datetime.datetime.strftime(time, '%Y-%m-%dT%Hh%Mm%S')
+    return time, format_time
+
 
 
 def extract_header(text):
     """
     Extracts the header and text from a given article. 
     @param text: Article text to be extracted
-    return: title, author, date, link to article, and body of text
+    return: title, author, date, formatted time, link to article, and body of text
     """
     search = re.search(r'--(.+?)\n--(.+?)\n--(.+?)\n--(.+?)\n.+?Reuters\)\s-', text, flags=re.DOTALL)
     text = re.sub(r'^--.+?Reuters\)\s-', '', text, flags=re.DOTALL)
     title = search.group(1)
     author = re.sub(r'By\s', '', search.group(2))
-    date = correct_date_format(codecs.getdecoder('unicode_escape')(search.group(3))[0].replace('\n','').strip())
+    date, formatted_time = correct_date_format(codecs.getdecoder('unicode_escape')(search.group(3))[0].replace('\n','').strip())
     link = search.group(4)
-    return title, author, date, link, text
+    return title, author, date, formatted_time, link, text
 
 
 def read_and_index():
     """
     Reads files and subsequently indexes them into an ElasticSearch database. Used for easily querying needed articles.
     """
-    path = os.getcwd() 
+    db.articles.drop()
+    path = '/home/jmkovachi/Documents/jupyter_notebooks'
     reuters_folders = os.listdir('/home/jmkovachi/Documents/jupyter_notebooks/reuters')
     path += '/reuters'
     id = 1
@@ -68,15 +74,16 @@ def read_and_index():
                 with open(path + '/' + folder + '/' + file) as f:
                     raw_text = f.read()
                     try:
-                        title, author, date, link, text = extract_header(raw_text)
+                        title, author, date, formatted_time, link, text = extract_header(raw_text)
                     except Exception as e:
-                        print(text)
+                        #print(text)
                         print(e)
                         error_count += 1
                         continue
-                    es.index(index='articles', doc_type='article', id=id, body={'title' : codecs.getdecoder('unicode_escape')(title)[0].replace('\n','').strip(),
+                    db.articles.insert_one({'title' : codecs.getdecoder('unicode_escape')(title)[0].replace('\n','').strip(),
                                                                                 'author' : author.replace('\n','').strip(), 
                                                                                 'date' : date,
+                                                                                'time_string' : formatted_time,
                                                                                 'link' : link.replace('\n','').strip(),
                                                                                 'text' : codecs.getdecoder('unicode_escape')(text)[0].replace('\n','').strip()})
                     id += 1
@@ -100,4 +107,6 @@ def read_company_list():
             es.index(index='companies', doc_type='company', body={ 'code' : abbrev, 'title' : title})
 
 if __name__ == "__main__":
-    read_company_list()
+    db.articles.create_index( [( 'author', pymongo.TEXT),  ('title', pymongo.TEXT), ('time_string', pymongo.TEXT)] )
+    #read_company_list()
+    read_and_index()
