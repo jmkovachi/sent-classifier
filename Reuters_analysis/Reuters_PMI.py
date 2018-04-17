@@ -7,28 +7,21 @@ import numpy as np
 from elasticsearch import Elasticsearch
 from QuandlWrapper import QuandlWrapper
 from QueryES import QueryES
+from pymongo import MongoClient
+from companies import Companies
 es = Elasticsearch()
 queryES = QueryES()
 quandl = QuandlWrapper()
+client = MongoClient("mongodb://127.0.0.1:27018")
+db = client['primer']
 
 
 def find_incident_orgs(title):
-    chunks = [chunk for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(title)))]
-    for chunk in chunks:
-        #print(chunk)
-        if hasattr(chunk, 'label'):
-            #print('a'. join(c[0] for c in chunk))
-            query = {
-                "query": {
-                    "match": {
-                        "title": ' '.join(c[0] for c in chunk)
-                    }
-                }
-            }
-            res = es.search(index='companies', doc_type='company', body=query)
-            if res['hits']['total'] > 0:
-                return res['hits']['hits'][0]['_source']['code']
-    return 'Nothing'
+    orgs = []
+    for company in Companies.companies:
+        if company[2].lower() in title.lower():
+            orgs.append(company)
+    return orgs
 
 
 class McDonald_Word_List:
@@ -225,9 +218,9 @@ class McDonald_Word_List:
         # +1s added for smoothing
 
 
-articles = queryES.query()
-mcd = McDonald_Word_List()
-mcd.compute_calculations(articles)
+#articles = queryES.query()
+#mcd = McDonald_Word_List()
+#mcd.compute_calculations(articles)
 
 
 

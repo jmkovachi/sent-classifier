@@ -15,6 +15,9 @@ import datetime
 from datetime import timedelta
 import QuandlWrapper
 import Reuters_PMI
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.linear_model import SGDClassifier
 client = MongoClient("mongodb://127.0.0.1:27018")
 db = client['primer']
 
@@ -165,6 +168,7 @@ class SVM_Trainer(Trainer):
   def train(self):
     
     import re
+    
 
     time = datetime.datetime(self.year, 1, 1)
 
@@ -178,23 +182,98 @@ class SVM_Trainer(Trainer):
 
     articles = []
     decisions = []
-    for article in db.articles.find({'date': {'$gte': time, '$lt': end_time}}):
+    count_articles = 0
+    count = 0
+    train_set = []
+    test_set = []
+    for article in db.articles.find():
+      if count_articles % 4 == 0:
+        test_set.append(article)
+      else:
+        train_set.append(article)
+      count_articles += 1
+    for article in train_set:
+      try:
+        orgs = Reuters_PMI.find_incident_orgs(article['title'])
+        if orgs == []:
+          continue
+        prices = QuandlWrapper.query_org_prices(orgs[0], QuandlWrapper.convert_dates([article['time_string'], QuandlWrapper.add_week(article['time_string'])]))
+      except Exception as e:
+        print(e)
+        continue
       articles.append(article['text'])
-      prices = QuandlWrapper.query_org_prices(Reuters_PMI.find_incident_orgs(article['title']), QuandlWrapper.convert_dates([article['date'], QuandlWrapper.add_week(article['date'])]))
       if prices['close'] > prices['open']:
         decisions.append('positive')
       else:
         decisions.append('negative')
+      count += 1
+      if count == 3000:
+        break
+
+      print(decisions[len(decisions)-1])
+
+    print(len(decisions))
+    
+    import numpy as np
+
+    decisions = np.array(decisions)
+    self.count_vec = CountVectorizer()
+
+    X_train_counts = self.count_vec.fit_transform(articles)
 
     
+    self.tfidf_transformer = TfidfTransformer()
+    X_train_tfidf = self.tfidf_transformer.fit_transform(X_train_counts)
+
+    self.classifier = SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, n_iter=1000, random_state=42)
+
+    self.classifier.fit(X_train_tfidf, decisions)
+
+    return test_set
+
+  def test(self, test_set):
+    articles = []
+    decisions = []
+    count = 0
+    for article in test_set:
+      try:
+        orgs = Reuters_PMI.find_incident_orgs(article['title'])
+        if orgs == []:
+          continue
+        prices = QuandlWrapper.query_org_prices(orgs[0], QuandlWrapper.convert_dates([article['time_string'], QuandlWrapper.add_week(article['time_string'])]))
+      except Exception as e:
+        print(e)
+        continue
+      articles.append(article['text'])
+      if prices['close'] > prices['open']:
+        decisions.append('positive')
+      else:
+        decisions.append('negative')
+      count += 1
+      if count == 3000:
+        break  
+
+    counts = self.count_vec.transform(articles)
+    test_tfidf = self.tfidf_transformer.transform(counts)
+    classification = self.classifier.predict(test_tfidf)
+    correct_count = 0
+    overall_count = 0
+    index = 0
+    for decision in classification:
+      if decision == decisions[index]:
+        correct_count += 1
+      overall_count += 1
+      index += 1
+    print(correct_count / overall_count)
 
 
 
 
 svm = SVM_Trainer(2009)
 
-svm.train()
+test_set = svm.train()
 
+svm.test(test_set)
   
 
 #nltk_train_semeval()

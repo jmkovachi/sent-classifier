@@ -1,6 +1,6 @@
 import requests
 import json
-from classifyPOS import NB_Trainer as trainer
+#from classifyPOS import NB_Trainer as trainer
 from datetime import datetime, timedelta
 import re
 
@@ -19,7 +19,7 @@ def add_week(time):
     Return: 2009-01-12T07h53m00
 
     """
-    t = datetime.strptime(time, '%Y-%m-%dT%Hh%Mm%S')
+    t = datetime.strptime(time, '%Y-%m-%dT%Hh%Mm%S' )
     t = t + timedelta(weeks=1)
     t = datetime.strftime(t, '%Y-%m-%dT%Hh%Mm%S')
     return t
@@ -45,7 +45,7 @@ def query_org_prices(org_name, dates):
     url = "https://www.quandl.com/api/v3/datatables/WIKI/PRICES"
 
     # Below, we will join each date by a comma in order to query Quandl
-    querystring = {"ticker":org_name,"date":','.join(dates),"api_key":"18EnimioewvUf_FuJxf-"}
+    querystring = {"ticker":org_name[0],"date":','.join(dates),"api_key":"18EnimioewvUf_FuJxf-"}
 
     headers = {
         'cache-control': "no-cache",
@@ -64,14 +64,12 @@ def query_org_prices(org_name, dates):
 class QuandlWrapper:
 
     def __init__(self):
-        self.bayes_classifier = trainer()
-        self.bayes_classifier.nltk_train_semeval()
+        self.bayes_classifier = None
+        #self.bayes_classifier.nltk_train_semeval()
     
     def classification_decision(self, title, org_name, date, num_pos, num_neg):
         decision = self.bayes_classifier.classify(text=title)
-        print(decision)
         price_data = query_org_prices(org_name, convert_dates([date, add_week(date)]))
-        print(price_data)
         price_movement = price_data['close'] - price_data['open']
         results = []
         if price_movement > 0 and decision == 'positive':
