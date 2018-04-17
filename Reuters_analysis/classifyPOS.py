@@ -171,7 +171,11 @@ class SVM_Trainer(Trainer):
     Trainer.__init__(self, year)
 
   def train(self, train_titles=False):
-
+    """
+    Method to train the SDG classifier.
+    @param train_titles: boolean to indicate whether titles or bodies of text should be trained.
+    return: test set of articles that we will use for training.
+    """
     articles = []
     decisions = []
     count_articles = 0
@@ -224,7 +228,6 @@ class SVM_Trainer(Trainer):
   def test(self, test_set, test_titles=False):
     """
     Method used to test the SDGClassifier.
-
     """
     articles = []
     decisions = []

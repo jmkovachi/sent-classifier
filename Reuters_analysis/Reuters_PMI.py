@@ -44,6 +44,11 @@ class McDonald_Word_List:
                   len(self.neg_words)))
 
     def getWB(self):
+        """
+        Gets the McDonald workbook excel file and stores all of its values in 
+        the pos_words and neg_words dictionary member variable of the McDonald_Word_List
+        class.
+        """
         FORMAT = ['Positive', 'Negative']
         values = ""
 
