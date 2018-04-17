@@ -9,6 +9,7 @@ Created on Sun Feb  4 23:39:36 2018
 #from classifiers.read_movie_reviews import read_Movies as movie_reader
 import nltk
 import random
+import traceback
 from training import Data
 from pymongo import MongoClient
 import datetime
@@ -18,6 +19,7 @@ import Reuters_PMI
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.linear_model import SGDClassifier
+import numpy as np
 client = MongoClient("mongodb://127.0.0.1:27018")
 db = client['primer']
 
@@ -136,6 +138,9 @@ class NB_Trainer(Trainer):
 
 
     def nltk_train_semeval(self):
+        """
+        This function trains the semeval data on the NLTK naivebayes classifier.
+        """
         d = Data()
         data = d.data
         #
@@ -165,20 +170,7 @@ class SVM_Trainer(Trainer):
     self.classifier = None
     Trainer.__init__(self, year)
 
-  def train(self):
-    
-    import re
-    
-
-    time = datetime.datetime(self.year, 1, 1)
-
-    end_time = time + timedelta(days=365)
-
-    #for doc in db.articles.find({}):
-    #  print(doc)
-
-    #for doc in db.articles.find({'date': {'$gte': time, '$lt': end_time}}):
-        #print(doc)
+  def train(self, train_titles=False):
 
     articles = []
     decisions = []
@@ -199,9 +191,9 @@ class SVM_Trainer(Trainer):
           continue
         prices = QuandlWrapper.query_org_prices(orgs[0], QuandlWrapper.convert_dates([article['time_string'], QuandlWrapper.add_week(article['time_string'])]))
       except Exception as e:
-        print(e)
+        print(traceback.format_exc())
         continue
-      articles.append(article['text'])
+      articles.append(article['text' if not train_titles else 'title'])
       if prices['close'] > prices['open']:
         decisions.append('positive')
       else:
@@ -213,8 +205,6 @@ class SVM_Trainer(Trainer):
       print(decisions[len(decisions)-1])
 
     print(len(decisions))
-    
-    import numpy as np
 
     decisions = np.array(decisions)
     self.count_vec = CountVectorizer()
@@ -231,7 +221,11 @@ class SVM_Trainer(Trainer):
 
     return test_set
 
-  def test(self, test_set):
+  def test(self, test_set, test_titles=False):
+    """
+    Method used to test the SDGClassifier.
+
+    """
     articles = []
     decisions = []
     count = 0
@@ -242,9 +236,9 @@ class SVM_Trainer(Trainer):
           continue
         prices = QuandlWrapper.query_org_prices(orgs[0], QuandlWrapper.convert_dates([article['time_string'], QuandlWrapper.add_week(article['time_string'])]))
       except Exception as e:
-        print(e)
+        print(traceback.format_exc())
         continue
-      articles.append(article['text'])
+      articles.append(article['text' if not test_titles else 'title'])
       if prices['close'] > prices['open']:
         decisions.append('positive')
       else:
@@ -264,6 +258,7 @@ class SVM_Trainer(Trainer):
         correct_count += 1
       overall_count += 1
       index += 1
+    print(overall_count)
     print(correct_count / overall_count)
 
 
@@ -271,9 +266,9 @@ class SVM_Trainer(Trainer):
 
 svm = SVM_Trainer(2009)
 
-test_set = svm.train()
+test_set = svm.train(train_titles=True)
 
-svm.test(test_set)
+svm.test(test_set, test_titles=True)
   
 
 #nltk_train_semeval()

@@ -1,10 +1,7 @@
 import requests
 import json
-#from classifyPOS import NB_Trainer as trainer
 from datetime import datetime, timedelta
 import re
-
-
 
 def add_week(time):
     """
@@ -41,11 +38,10 @@ def query_org_prices(org_name, dates):
     @param dates: List of dates to query
     """
 
-    print(dates)
     url = "https://www.quandl.com/api/v3/datatables/WIKI/PRICES"
 
     # Below, we will join each date by a comma in order to query Quandl
-    querystring = {"ticker":org_name[0],"date":','.join(dates),"api_key":"18EnimioewvUf_FuJxf-"}
+    querystring = {"ticker":org_name[0], "date":','.join(dates), "api_key":"18EnimioewvUf_FuJxf-"}
 
     headers = {
         'cache-control': "no-cache",
@@ -56,7 +52,7 @@ def query_org_prices(org_name, dates):
 
     # load into json
     result = json.loads(response.text)
-    # print(result)
+
     # return opening prices from list of dates and closing prices from list of dates
     return {'open' : result['datatable']['data'][0][2], 'close' : result['datatable']['data'][0][5], 
             'final-open' : result['datatable']['data'][1][2], 'final-close' : result['datatable']['data'][1][5]}
