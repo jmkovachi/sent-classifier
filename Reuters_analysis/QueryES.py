@@ -4,6 +4,15 @@ es = Elasticsearch()
 
 class QueryES:
     
+    def __init__(self, db=None):
+        if db != None:
+            self.orgs = [org for org in db.companies.find()]
+
+    def search_db_for_orgs(self, search_str):
+        for org in self.orgs:
+            if org['title'] != '' and org['title'] in search_str:
+                return org
+
     @staticmethod
     def query():
         query = {
@@ -16,6 +25,8 @@ class QueryES:
         }
         hits = es.search(index='articles', doc_type='article', body=query)
         return hits['hits']['hits']
+
+    
 
 
 #print(QueryES.query())

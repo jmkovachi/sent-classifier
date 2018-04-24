@@ -102,12 +102,15 @@ def read_company_list():
             abbrev = row[0]
             title = row[1]
             abbrev = re.sub(r'WIKI/', '', abbrev, flags=re.DOTALL)
-            title = re.sub(r'\sPrices.*', '', title[1:], flags=re.DOTALL)
+            title = re.sub(r'(Corp.*|\sPrices.*|Inc.*)', '', title[1:], flags=re.DOTALL)
+            if '(' in title:
+                title = title.split(' (')[0]
             print('{}, {}'.format(abbrev, title))
-            db.companies.insert_one({ 'code' : abbrev, 'title' : title})
+            db.companies.insert_one({ 'code' : abbrev, 'title' : title.strip()})
 
 if __name__ == "__main__":
     #db.articles.create_index( [( 'author', pymongo.TEXT),  ('title', pymongo.TEXT), ('time_string', pymongo.TEXT)] )
+    db.companies.drop()
     db.companies.create_index( [('code', pymongo.TEXT), ('title', pymongo.TEXT)] )
     read_company_list()
     #read_and_index()

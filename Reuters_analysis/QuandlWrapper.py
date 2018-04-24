@@ -17,7 +17,7 @@ def add_week(time):
 
     """
     t = datetime.strptime(time, '%Y-%m-%dT%Hh%Mm%S' )
-    t = t + timedelta(weeks=1)
+    t = t + timedelta(days=7)
     t = datetime.strftime(t, '%Y-%m-%dT%Hh%Mm%S')
     return t
 
@@ -40,8 +40,14 @@ def query_org_prices(org_name, dates):
 
     url = "https://www.quandl.com/api/v3/datatables/WIKI/PRICES"
 
+    if isinstance(org_name, list):
+        org_name = org_name[0]
+    elif isinstance(org_name, dict):
+        org_name = org_name['code']
+
+    print(org_name)
     # Below, we will join each date by a comma in order to query Quandl
-    querystring = {"ticker":org_name[0], "date":','.join(dates), "api_key":"18EnimioewvUf_FuJxf-"}
+    querystring = {"ticker":org_name, "date":','.join(dates), "api_key":"18EnimioewvUf_FuJxf-"}
 
     headers = {
         'cache-control': "no-cache",

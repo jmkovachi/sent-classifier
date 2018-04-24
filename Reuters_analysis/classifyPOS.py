@@ -20,6 +20,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.linear_model import SGDClassifier
 import numpy as np
+import QueryES
 client = MongoClient("mongodb://127.0.0.1:27018")
 db = client['primer']
 
@@ -164,10 +165,70 @@ class NB_Trainer(Trainer):
         decision = self.classifier.classify(word_feats(nltk.word_tokenize(text)))
         return decision
 
+    def test(self, test_set, test_titles=False):
+      """
+      Method used to test the SDGClassifier.
+      """
+      articles = []
+      decisions = []
+      count = 0
+      for article in test_set:
+        try:
+          orgs = Reuters_PMI.find_incident_orgs(article['title'])
+          if orgs == []:
+            continue
+          prices = QuandlWrapper.query_org_prices(orgs[0], QuandlWrapper.convert_dates([article['time_string'], QuandlWrapper.add_week(article['time_string'])]))
+        except Exception as e:
+          print(traceback.format_exc())
+          continue
+        if prices['close']/prices['open'] > 1 :
+          decisions.append('positive')
+        elif prices['close']/prices['open'] <= 1:
+          decisions.append('negative')
+        else:
+          continue
+        articles.append(article['text' if not test_titles else 'title'])
+        count += 1
+        if count == 3000:
+          break  
+
+      index = 0
+      correct_count = 0
+      overall_count = 0
+      true_pos = 0
+      false_pos = 0
+      true_neg = 0
+      false_neg = 0
+      for article in articles:
+        decision = self.classify(article)
+        if decision == decisions[index]:
+          if decision == decisions[index] and decision == 'positive':
+            true_pos += 1
+          elif decision != decisions[index] and decision == 'positive':
+            false_pos += 1
+          elif decision == decisions[index] and decision == 'negative':
+            true_neg += 1
+          elif decision != decisions[index] and decision == 'negative':
+            false_neg += 1
+          #correct_count += 1
+        #overall_count += 1
+        index += 1
+
+      precision = true_pos/(true_pos + false_pos)
+      recall = true_pos/(true_pos + false_neg)
+      accuracy = (true_pos + true_neg)/(true_pos + true_neg + false_neg + false_pos)
+      f_score = 2 * ((precision * recall)/(precision + recall))
+      print('Precision: {} \n Recall: {} \n Accuracy: {} \n F-Score: {} \n'.format(precision, recall, accuracy, f_score))
+      #print(overall_count)
+      #print(correct_count / overall_count)
+
 class SVM_Trainer(Trainer):
 
-  def __init__(self, year):
+  def __init__(self, year, use_mongo_orgs=False):
     self.classifier = None
+    self.use_mongo_orgs = use_mongo_orgs
+    if self.use_mongo_orgs:
+      self.Query_Mongo = QueryES.QueryES(db)
     Trainer.__init__(self, year)
 
   def train(self, train_titles=False):
@@ -180,35 +241,76 @@ class SVM_Trainer(Trainer):
     decisions = []
     count_articles = 0
     count = 0
-    train_set = []
+    
+
+    time = datetime.datetime(2006, 10, 19)
+    articles = []
+    decisions = []
     test_set = []
-    for article in db.articles.find():
-      if count_articles % 4 == 0:
-        test_set.append(article)
-      else:
-        train_set.append(article)
-      count_articles += 1
-    for article in train_set:
-      try:
-        orgs = Reuters_PMI.find_incident_orgs(article['title'])
-        if orgs == []:
+    companies = []
+
+    while time < datetime.datetime(2014, 1, 1):
+      time = time + timedelta(days=1)
+  
+      end_time = time + timedelta(days=1)
+      #for doc in db.articles.find({}):
+      #  print(doc)
+  
+      #for doc in db.articles.find({'date': {'$gte': time, '$lt': end_time}}):
+          #print(doc)
+  
+      count_articles = 0
+      train_set = []
+      
+      for article in db.articles.find({'date': {'$gte': time, '$lt': end_time}}):
+        #print(article)
+        if count_articles % 4 == 0:
+          test_set.append(article)
+        else:
+          train_set.append(article)
+        count_articles += 1
+      company_dict = {}
+      for article in train_set:
+        try:
+          if article['title'] == '':
+            continue
+          if self.use_mongo_orgs:
+            orgs = self.Query_Mongo.search_db_for_orgs(article['title'])
+          else:
+            orgs = Reuters_PMI.find_incident_orgs(article['title'])
+          if orgs == []:
+            continue
+          time_str = article['time_string'].split('T')[1]
+          if int(time_str[0:2]) > 9:
+            continue
+          else:
+            print(article['time_string'])
+          #if orgs[0][2] in company_dict:
+          #  company_dict[orgs[0][2]] += 1
+          #else:
+          #  company_dict[orgs[0][2]] = 1
+          #if company_dict[orgs[0][2]] > 2:
+           # print('hi')
+          prices = QuandlWrapper.query_org_prices(orgs[0] if not self.use_mongo_orgs else orgs, QuandlWrapper.convert_dates([article['time_string'], QuandlWrapper.add_week(article['time_string'])]))
+        except Exception as e:
+          print(traceback.format_exc())
           continue
-        prices = QuandlWrapper.query_org_prices(orgs[0], QuandlWrapper.convert_dates([article['time_string'], QuandlWrapper.add_week(article['time_string'])]))
-      except Exception as e:
-        print(traceback.format_exc())
-        continue
-      articles.append(article['text' if not train_titles else 'title'])
-      if prices['close'] > prices['open']:
-        decisions.append('positive')
-      else:
-        decisions.append('negative')
-      count += 1
-      if count == 3000:
-        break
+        print(orgs)
+        print(article['title'])
+        if prices['close']/prices['open'] > 1.015:
+          decisions.append('positive')
+        elif prices['close']/prices['open'] < .985:
+          decisions.append('negative')
+        else:
+          continue
+        articles.append(article['text' if not train_titles else 'title'])
+        #count += 1
+        #if count == 3000:
+          #break
 
-      print(decisions[len(decisions)-1])
+        #print(decisions[len(decisions)-1])
 
-    print(len(decisions))
+      print(len(decisions))
 
     decisions = np.array(decisions)
     self.count_vec = CountVectorizer()
@@ -232,20 +334,26 @@ class SVM_Trainer(Trainer):
     articles = []
     decisions = []
     count = 0
+   
     for article in test_set:
       try:
-        orgs = Reuters_PMI.find_incident_orgs(article['title'])
+        if self.use_mongo_orgs:
+          orgs = self.Query_Mongo.search_db_for_orgs(article['title'])
+        else:
+          orgs = Reuters_PMI.find_incident_orgs(article['title'])
         if orgs == []:
           continue
         prices = QuandlWrapper.query_org_prices(orgs[0], QuandlWrapper.convert_dates([article['time_string'], QuandlWrapper.add_week(article['time_string'])]))
       except Exception as e:
         print(traceback.format_exc())
         continue
-      articles.append(article['text' if not test_titles else 'title'])
-      if prices['close'] > prices['open']:
+      if prices['close']/prices['open'] > 1 :
         decisions.append('positive')
-      else:
+      elif prices['close']/prices['open'] <= 1:
         decisions.append('negative')
+      else:
+        continue
+      articles.append(article['text' if not test_titles else 'title'])
       count += 1
       if count == 3000:
         break  
@@ -256,22 +364,50 @@ class SVM_Trainer(Trainer):
     correct_count = 0
     overall_count = 0
     index = 0
+    true_pos = 0
+    false_pos = 0
+    true_neg = 0
+    false_neg = 0
     for decision in classification:
-      if decision == decisions[index]:
+      if decision == decisions[index] and decision == 'positive':
+        true_pos += 1
+      elif decision != decisions[index] and decision == 'positive':
+        false_pos += 1
+      elif decision == decisions[index] and decision == 'negative':
+        true_neg += 1
+      elif decision != decisions[index] and decision == 'negative':
+        false_neg += 1
+    
         correct_count += 1
       overall_count += 1
       index += 1
-    print(overall_count)
-    print(correct_count / overall_count)
+
+    precision = true_pos/(true_pos + false_pos)
+    recall = true_pos/(true_pos + false_neg)
+    accuracy = (true_pos + true_neg)/(true_pos + true_neg + false_neg + false_pos)
+    f_score = 2 * ((precision * recall)/(precision + recall))
+    print('Precision: {} \n Recall: {} \n Accuracy: {} \n F-Score: {} \n'.format(precision, recall, accuracy, f_score))
+    #print(overall_count)
+    #print(correct_count / overall_count)
+
+articles = []
+count = 0
+for article in db.articles.find():
+  articles.append(article)
+  ##print(article['time_string'])
+  #count += 1
+  #print(count)
+
+nb = NB_Trainer(2006)
+nb.nltk_train_semeval()
+nb.test(articles, test_titles=True)
 
 
+#svm = SVM_Trainer(2009, use_mongo_orgs=False)
 
+#test_set = svm.train(train_titles=True)
 
-svm = SVM_Trainer(2009)
-
-test_set = svm.train(train_titles=True)
-
-svm.test(test_set, test_titles=True)
+#svm.test(test_set, test_titles=True)
   
 
 #nltk_train_semeval()
