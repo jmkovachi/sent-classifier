@@ -144,22 +144,14 @@ class NB_Trainer(Trainer):
         """
         d = Data()
         data = d.data
-        #
-
-        # print(data)
+    
         words = [ (word_feats(nltk.word_tokenize(obj['title'])), 'positive') for obj in data if obj['sentiment'] > 0.25 ]
         words.extend([ (word_feats(nltk.word_tokenize(obj['title'])), 'negative') for obj in data if obj['sentiment'] < -0.25 ])
-        #print(words)
+
         random.shuffle(words)
         train_set = words
         self.classifier = nltk.NaiveBayesClassifier.train(train_set)
 
-        """print(classifier.classify(word_feats('Dow Industrials Rise, Extending Rally'.split(' '))))
-
-        for t in trial:
-            print(classifier.classify(word_feats(t['title'].split(' '))))
-            print(t['sentiment'])
-            print('\n')"""
 
     def classify(self, text):
         decision = self.classifier.classify(word_feats(nltk.word_tokenize(text)))
@@ -237,13 +229,11 @@ class SVM_Trainer(Trainer):
     @param train_titles: boolean to indicate whether titles or bodies of text should be trained.
     return: test set of articles that we will use for training.
     """
-    articles = []
-    decisions = []
     count_articles = 0
     count = 0
     
 
-    time = datetime.datetime(2006, 10, 19)
+    time = datetime.datetime(2006, 10, 19) #first available date from articles
     articles = []
     decisions = []
     test_set = []
@@ -253,17 +243,11 @@ class SVM_Trainer(Trainer):
       time = time + timedelta(days=1)
   
       end_time = time + timedelta(days=1)
-      #for doc in db.articles.find({}):
-      #  print(doc)
-  
-      #for doc in db.articles.find({'date': {'$gte': time, '$lt': end_time}}):
-          #print(doc)
   
       count_articles = 0
       train_set = []
       
       for article in db.articles.find({'date': {'$gte': time, '$lt': end_time}}):
-        #print(article)
         if count_articles % 4 == 0:
           test_set.append(article)
         else:
@@ -280,23 +264,11 @@ class SVM_Trainer(Trainer):
             orgs = Reuters_PMI.find_incident_orgs(article['title'])
           if orgs == []:
             continue
-          time_str = article['time_string'].split('T')[1]
-          if int(time_str[0:2]) > 9:
-            continue
-          else:
-            print(article['time_string'])
-          #if orgs[0][2] in company_dict:
-          #  company_dict[orgs[0][2]] += 1
-          #else:
-          #  company_dict[orgs[0][2]] = 1
-          #if company_dict[orgs[0][2]] > 2:
-           # print('hi')
+
           prices = QuandlWrapper.query_org_prices(orgs[0] if not self.use_mongo_orgs else orgs, QuandlWrapper.convert_dates([article['time_string'], QuandlWrapper.add_week(article['time_string'])]))
         except Exception as e:
           print(traceback.format_exc())
           continue
-        print(orgs)
-        print(article['title'])
         if prices['close']/prices['open'] > 1.015:
           decisions.append('positive')
         elif prices['close']/prices['open'] < .985:
@@ -304,13 +276,6 @@ class SVM_Trainer(Trainer):
         else:
           continue
         articles.append(article['text' if not train_titles else 'title'])
-        #count += 1
-        #if count == 3000:
-          #break
-
-        #print(decisions[len(decisions)-1])
-
-      print(len(decisions))
 
     decisions = np.array(decisions)
     self.count_vec = CountVectorizer()
@@ -387,8 +352,7 @@ class SVM_Trainer(Trainer):
     accuracy = (true_pos + true_neg)/(true_pos + true_neg + false_neg + false_pos)
     f_score = 2 * ((precision * recall)/(precision + recall))
     print('Precision: {} \n Recall: {} \n Accuracy: {} \n F-Score: {} \n'.format(precision, recall, accuracy, f_score))
-    #print(overall_count)
-    #print(correct_count / overall_count)
+
 
 articles = []
 count = 0

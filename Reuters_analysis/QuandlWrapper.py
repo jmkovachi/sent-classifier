@@ -45,7 +45,6 @@ def query_org_prices(org_name, dates):
     elif isinstance(org_name, dict):
         org_name = org_name['code']
 
-    print(org_name)
     # Below, we will join each date by a comma in order to query Quandl
     querystring = {"ticker":org_name, "date":','.join(dates), "api_key":"18EnimioewvUf_FuJxf-"}
 

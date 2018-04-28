@@ -83,6 +83,9 @@ class McDonald_Word_List:
                     neg_count += 1
         return l, pos_count, neg_count
 
+    def compute_lexicon_score(self):
+
+
     def compute_calculations(self, articles):
         length = 0
         overall_pos = 0
@@ -137,19 +140,15 @@ class McDonald_Word_List:
                 chunks = [chunk for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(sent)))]
                 for chunk in chunks:
                         if hasattr(chunk, 'label') and str(chunk.label()) == 'ORGANIZATION':
-                            #print(chunk.label())
                             org_count += 1
                             self.overall_org += 1
                             org_list.append(str(chunk[0]).upper())
                             if str(chunk[0]).upper() not in self.pos_df.columns:
-                                #print(str(chunk[0]).upper())
                                 self.pos_df[str(chunk[0]).upper()] = np.zeros(len(self.pos_df.index))
                                 self.neg_df[str(chunk[0]).upper()] = np.zeros(len(self.neg_df.index))
                             
                 tmp_org_count = org_count
                 for chunk in chunks:
-                        #print(chunk[0])
-                        #print(mcd.pos_words)
                         if str(chunk[0]).upper() in self.pos_words:
                             tmp_org_list = org_list
                             
@@ -161,7 +160,6 @@ class McDonald_Word_List:
                                 self.intersection_pos[str(chunk[0]).upper()] += 1
                             self.pos_word_counts[str(chunk[0]).upper()] += 1
                         elif str(chunk[0]).upper() in self.neg_words:
-                            #print(chunk[0])
                             tmp_org_list = org_list  
                             while(len(tmp_org_list) > 0):
                                 neg_count += 1
@@ -206,16 +204,7 @@ class McDonald_Word_List:
         plt.xticks(range(len(sorted_counts[0:20])), [val[0] for val in sorted_counts[:20]])
         plt.xticks(rotation=70)
         plt.show()
-    
-    @staticmethod
-    def extract_header(text):
-        search = re.search(r'--(.+?)--(.+?)--(.+?)--(.+?)Reuters\)\s-', text, flags=re.DOTALL)
-        text = re.sub(r'--.+?--.+?--.+?--.+?Reuters\)\s-', '', text)
-        title = search.group(1)
-        author = search.group(2)
-        date = search.group(3)
-        link = search.group(4)
-        return title, author, date, link, text
+
 
     @staticmethod
     def compute_PMI(class1, class2, int_c1c2, overall_count):

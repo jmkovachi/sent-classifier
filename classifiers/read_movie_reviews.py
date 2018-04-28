@@ -60,7 +60,6 @@ class read_Movies:
         return list(set(new_list)), doc_list
     
     def tag_dir(self, base_dir):
-        #stops = set(stopwords.words('english'))
         words = []
         pos_index_count = 0
         test_docs_pos = []
@@ -72,20 +71,17 @@ class read_Movies:
                 continue
             pos_index_count += 1
             for sentence in nltk.sent_tokenize(text):
-                #print(sentence)
-                #print(nltk.pos_tag(['wow']))
                 split_sentence = [nltk.pos_tag([word]) for word in nltk.word_tokenize(sentence)]
                 for word in split_sentence:
-                    #print(word[0])
+
                     if "\n" in word:
                         word = word.replace('\n','')
                     elif word == '' or word == '!' or word == ';' or word == '?' or word == ';':
                         continue
-                    #feature_list.append(word)
-                    #print(word)
+
                     words.append((word[0], 'positive'))    
                 
-                #doc_list.append([set(split_sentence), 'positive', {'positive' : 1, 'negative' : 1}])
+
                
         print('halfway')
         neg_index_count = 0
@@ -104,9 +100,9 @@ class read_Movies:
                         word = word.replace('\n','')
                     elif word == '' or word == '!' or word == ';' or word == '?' or word == ';':
                         continue 
-                    #feature_list.append(word)
+
                     words.append((word[0], 'negative'))
-               # doc_list.append([set(sentence.split(' ')), 'negative', {'positive' : 1, 'negative' : 1}])
+
         
         return words, test_docs_pos, test_docs_neg
 
