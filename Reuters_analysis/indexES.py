@@ -66,7 +66,6 @@ def read_and_index():
             article_files = os.listdir(path + '/' + folder)
         except Exception as e:
             print(e)
-            print(article_files)
             error_count += 1
             continue
         for file in article_files:
@@ -76,7 +75,6 @@ def read_and_index():
                     try:
                         title, author, date, formatted_time, link, text = extract_header(raw_text)
                     except Exception as e:
-                        #print(text)
                         print(e)
                         error_count += 1
                         continue
