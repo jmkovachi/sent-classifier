@@ -43,25 +43,28 @@ class TestResults:
         svm_trainer = classifyPOS.SVM_Trainer()
         lexicon_test = Reuters_PMI.McDonald_Word_List()
 
+        '''
         try:
             print('Beginning Lexicon testing..')
             precision, recall, accuracy, f_score = lexicon_test.compute_lexicon_score()
             TestResults.print_scores('lexicon', precision, recall, accuracy, f_score)
         except Exception as e:
             print('Lexicon failed : ' + str(e))
+        '''
 
         try:
             print('Beginning SVM testing..')
             svm_test_set = svm_trainer.train(train_titles=True)
-            precision, recall, accuracy, f_score = svm_trainer.test(svm_test_set)
-            TestResults.print_scores('SVM', precision, recall, accuracy, f_score)
+            precision, recall, accuracy, f_score = svm_trainer.test(svm_test_set, test)
+            TestResults.print_scores(precision, recall, accuracy, f_score, 'SVM')
         except Exception as e:
             print('SVM failed: ' + str(e))
 
         try:
             print('Beginning NB testing..')
-            nb_test_set = nb_trainer.nltk_train_semeval()
-            precision, recall, accuracy, f_score = nb_trainer.test(nb_test_set)
+            nb_trainer.nltk_train_semeval()
+            precision, recall, accuracy, f_score = nb_trainer.test(test_titles=True)
+            TestResults.print_scores(precision, recall, accuracy, f_score, 'NB')
         except Exception as e:
             print('NB failed: ' + str(e))
 

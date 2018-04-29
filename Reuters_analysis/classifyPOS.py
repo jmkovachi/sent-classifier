@@ -22,6 +22,8 @@ from sklearn.linear_model import SGDClassifier
 import numpy as np
 import QueryES
 import TestResults
+from nltk.stem import WordNetLemmatizer
+lemmatizer = WordNetLemmatizer()
 client = MongoClient("mongodb://127.0.0.1:27018")
 db = client['primer']
 
@@ -61,14 +63,18 @@ class NB_Trainer(Trainer):
         decision = self.classifier.classify(word_feats(nltk.word_tokenize(text)))
         return decision
 
-    def test(self, test_set, test_titles=False):
+    def test(self, test_titles=False):
       """
       Method used to test the NBClassifier.
       """
+      db_articles = [article for article in db.articles.find()]
       articles = []
       decisions = []
       count = 0
-      for article in test_set:
+      for article in db_articles:
+        article = dict(article)
+        article['text'] = " ".join([lemmatizer.lemmatize(word) for sentence in nltk.sent_tokenize(article['text']) for word in nltk.word_tokenize(sentence)])
+        article['title'] = " ".join([lemmatizer.lemmatize(word) for sentence in nltk.sent_tokenize(article['title']) for word in nltk.word_tokenize(sentence)])
         try:
           orgs = Reuters_PMI.find_incident_orgs(article['title'])
           if orgs == []:
@@ -77,9 +83,9 @@ class NB_Trainer(Trainer):
         except Exception as e:
           print(traceback.format_exc())
           continue
-        if prices['close']/prices['open'] > 1 :
+        if prices['close']/prices['open'] > 1.015:
           decisions.append('positive')
-        elif prices['close']/prices['open'] <= 1:
+        elif prices['close']/prices['open'] <= .985:
           decisions.append('negative')
         else:
           continue
@@ -138,6 +144,9 @@ class SVM_Trainer(Trainer):
       train_set = []
       
       for article in db.articles.find({'date': {'$gte': time, '$lt': end_time}}):
+        article = dict(article)
+        article['text'] = " ".join([lemmatizer.lemmatize(word) for sentence in nltk.sent_tokenize(article['text']) for word in nltk.word_tokenize(sentence)])
+        article['title'] = " ".join([lemmatizer.lemmatize(word) for sentence in nltk.sent_tokenize(article['title']) for word in nltk.word_tokenize(sentence)])
         if count_articles % 4 == 0:
           test_set.append(article)
         else:
@@ -175,7 +184,7 @@ class SVM_Trainer(Trainer):
     self.tfidf_transformer = TfidfTransformer()
     X_train_tfidf = self.tfidf_transformer.fit_transform(X_train_counts)
 
-    self.classifier = SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, n_iter=1000, random_state=42)
+    self.classifier = SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, n_iter=1000, random_state=42, shuffle=True)
 
     self.classifier.fit(X_train_tfidf, decisions)
 

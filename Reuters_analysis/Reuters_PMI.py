@@ -10,6 +10,8 @@ from QueryES import QueryES
 from pymongo import MongoClient
 from companies import Companies
 from TestResults import TestResults
+from nltk.stem import WordNetLemmatizer
+lemmatizer = WordNetLemmatizer()
 es = Elasticsearch()
 queryES = QueryES()
 quandl = QuandlWrapper()
@@ -77,7 +79,8 @@ class McDonald_Word_List:
         neg_count = 0
         for s in sentences:
             l += len(s)
-            for word in nltk.word_tokenize(s):
+            words = [lemmatizer.lemmatize(word) for word in nltk.word_tokenize(s)]
+            for word in words:
                 if word.upper() in self.pos_words:
                     pos_count += 1
                 elif word.upper() in self.neg_words:
@@ -104,7 +107,6 @@ class McDonald_Word_List:
                         true_neg += 1
                     elif result == 'false-neg':
                         false_neg += 1
-                    #print('Num true : {}, Num false : {}, Num lex true : {}, Num lex false: {}'.format(no_true, no_false, no_lex_true, no_lex_false))
             except Exception as e:
                 print(e)
 

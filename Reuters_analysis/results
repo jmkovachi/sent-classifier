@@ -1,3 +1,10 @@
 0.5652173913043478
 
 0.6155913978494624 (with price controlled threshold)
+
+
+Type: SVM (w/o Titles)
+ Precision: 0.5559006211180124
+ Recall: 0.39601769911504425
+ Accuracy: 0.5207373271889401
+ F score: 0.4625322997416021

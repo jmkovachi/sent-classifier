@@ -17,7 +17,7 @@ def add_week(time):
 
     """
     t = datetime.strptime(time, '%Y-%m-%dT%Hh%Mm%S' )
-    t = t + timedelta(days=7)
+    t = t + timedelta(days=1)
     t = datetime.strftime(t, '%Y-%m-%dT%Hh%Mm%S')
     return t
 
@@ -57,7 +57,6 @@ def query_org_prices(org_name, dates):
 
     # load into json
     result = json.loads(response.text)
-    print(result)
 
     # return opening prices from list of dates and closing prices from list of dates
     return {'open' : result['datatable']['data'][0][2], 'close' : result['datatable']['data'][0][5], 
