@@ -9,6 +9,7 @@ from QuandlWrapper import QuandlWrapper
 from QueryES import QueryES
 from pymongo import MongoClient
 from companies import Companies
+from TestResults import TestResults
 es = Elasticsearch()
 queryES = QueryES()
 quandl = QuandlWrapper()
@@ -84,7 +85,31 @@ class McDonald_Word_List:
         return l, pos_count, neg_count
 
     def compute_lexicon_score(self):
+        true_pos = 0
+        true_neg = 0
+        false_pos = 0
+        false_neg = 0
+        for article in db.articles.find():
+            orgs = find_incident_orgs(article['title'])
+            try:
+                #print(orgs)
+                if len(orgs) != 0:
+                    count, num_pos, num_neg = self.num_words(nltk.sent_tokenize(article['text']))
+                    result = quandl.classification_decision(article['text'], orgs[0], article['time_string'], num_pos, num_neg)
+                    if result == 'true-pos':
+                        true_pos += 1
+                    elif result == 'false-pos':
+                        false_pos += 1
+                    elif result == 'true-neg':
+                        true_neg += 1
+                    elif result == 'false-neg':
+                        false_neg += 1
+                    #print('Num true : {}, Num false : {}, Num lex true : {}, Num lex false: {}'.format(no_true, no_false, no_lex_true, no_lex_false))
+            except Exception as e:
+                print(e)
 
+        return TestResults.compute_scores(true_pos, true_neg, false_pos, false_neg)
+        
 
     def compute_calculations(self, articles):
         length = 0
@@ -106,14 +131,12 @@ class McDonald_Word_List:
             sentences = nltk.sent_tokenize(article['text'])
             orgs = find_incident_orgs(article['title'])
             try:
-                
-                print(orgs)
                 if orgs == 'Nothing':
                     continue
                 else:
                     count, num_pos, num_neg = self.num_words(nltk.sent_tokenize(article['text']))
                     result = quandl.classification_decision(article['text'], orgs, article['date'], num_pos, num_neg)
-                    print(article['title'])
+                    #print(article['title'])
                     if result[0]:
                         no_true += 1
                     elif not result[0]:
@@ -122,7 +145,7 @@ class McDonald_Word_List:
                         no_lex_true += 1
                     elif not result[1]:
                         no_lex_false += 1
-                    print('Num true : {}, Num false : {}, Num lex true : {}, Num lex false: {}'.format(no_true, no_false, no_lex_true, no_lex_false))
+                    #print('Num true : {}, Num false : {}, Num lex true : {}, Num lex false: {}'.format(no_true, no_false, no_lex_true, no_lex_false))
                     continue
 
             except Exception as e:

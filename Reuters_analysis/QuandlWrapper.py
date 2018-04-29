@@ -57,6 +57,7 @@ def query_org_prices(org_name, dates):
 
     # load into json
     result = json.loads(response.text)
+    print(result)
 
     # return opening prices from list of dates and closing prices from list of dates
     return {'open' : result['datatable']['data'][0][2], 'close' : result['datatable']['data'][0][5], 
@@ -69,31 +70,22 @@ class QuandlWrapper:
         #self.bayes_classifier.nltk_train_semeval()
     
     def classification_decision(self, title, org_name, date, num_pos, num_neg):
-        decision = self.bayes_classifier.classify(text=title)
         price_data = query_org_prices(org_name, convert_dates([date, add_week(date)]))
         price_movement = price_data['close'] - price_data['open']
-        results = []
-        if price_movement > 0 and decision == 'positive':
-            results.append(True)
-        elif price_movement > 0 and decision == 'negative':
-            results.append(False)
-        elif price_movement < 0 and decision == 'positive':
-            results.append(False)
-        elif price_movement < 0 and decision == 'negative':
-            results.append(True)
+        result = ''
 
         if price_movement > 0 and num_pos > num_neg:
-            results.append(True)
+            result = 'true-pos'
         elif price_movement > 0 and num_neg > num_pos:
-            results.append(False)
+            result = 'false-pos'
         elif price_movement < 0 and num_neg < num_pos:
-            results.append(True)
+            result = 'true-neg'
         elif price_movement < 0 and num_pos > num_neg:
-            results.append(False)
+            result = 'false-neg'
         elif num_pos == num_neg:
-            results.append(True)
+            result = 'true-pos' if price_movement > 0 else 'true-neg'
 
-        return results
+        return result
          
 
 
