@@ -7,7 +7,6 @@ import codecs
 from pymongo import MongoClient
 import pymongo
 es = Elasticsearch()
-#client = MongoClient()
 client = MongoClient("mongodb://127.0.0.1:27018")
 db = client['primer']
 
@@ -106,9 +105,7 @@ def read_company_list():
             print('{}, {}'.format(abbrev, title))
             db.companies.insert_one({ 'code' : abbrev, 'title' : title.strip()})
 
-if __name__ == "__main__":
-    #db.articles.create_index( [( 'author', pymongo.TEXT),  ('title', pymongo.TEXT), ('time_string', pymongo.TEXT)] )
+if __name__ == "__main__":]
     db.companies.drop()
     db.companies.create_index( [('code', pymongo.TEXT), ('title', pymongo.TEXT)] )
     read_company_list()
-    #read_and_index()

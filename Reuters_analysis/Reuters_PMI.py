@@ -138,7 +138,6 @@ class McDonald_Word_List:
                 else:
                     count, num_pos, num_neg = self.num_words(nltk.sent_tokenize(article['text']))
                     result = quandl.classification_decision(article['text'], orgs, article['date'], num_pos, num_neg)
-                    #print(article['title'])
                     if result[0]:
                         no_true += 1
                     elif not result[0]:
@@ -147,7 +146,6 @@ class McDonald_Word_List:
                         no_lex_true += 1
                     elif not result[1]:
                         no_lex_false += 1
-                    #print('Num true : {}, Num false : {}, Num lex true : {}, Num lex false: {}'.format(no_true, no_false, no_lex_true, no_lex_false))
                     continue
 
             except Exception as e:
@@ -197,10 +195,6 @@ class McDonald_Word_List:
             
     
     def visualize(self):
-        """print(compute_PMI(overall_pos, overall_org, intersection_pos, l))
-        print(compute_PMI(overall_neg, overall_org, intersection_neg, l))
-        #print(mcd.pos_word_counts)
-        print(pos_df)"""
         import matplotlib.pyplot as plt
 
         sorted_counts = sorted(self.pos_word_counts.items(), key=lambda kv: kv[1], reverse=True)
@@ -236,10 +230,6 @@ class McDonald_Word_List:
         return math.log((int_c1c2+1/overall_count)/((class1+1/overall_count)*(class2+1/overall_count)))
         # +1s added for smoothing
 
-
-#articles = queryES.query()
-#mcd = McDonald_Word_List()
-#mcd.compute_calculations(articles)
 
 
 

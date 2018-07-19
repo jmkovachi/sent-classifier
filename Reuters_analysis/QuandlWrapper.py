@@ -66,7 +66,6 @@ class QuandlWrapper:
 
     def __init__(self):
         self.bayes_classifier = None
-        #self.bayes_classifier.nltk_train_semeval()
     
     def classification_decision(self, title, org_name, date, num_pos, num_neg):
         price_data = query_org_prices(org_name, convert_dates([date, add_week(date)]))
@@ -85,11 +84,4 @@ class QuandlWrapper:
             result = 'true-pos' if price_movement > 0 else 'true-neg'
 
         return result
-         
-
-
-
-
-#quandl = QuandlWrapper()
-
-#print(quandl.query_org_prices('PCG', ['2004-11-18','2004-11-23']))
+        

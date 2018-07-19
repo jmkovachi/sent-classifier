@@ -46,17 +46,13 @@ class extract_MPQA:
                                value = f.find('Value')
                                if name.text == 'polarity':
                                    start = ann_items['StartNode']
-                                  #end = ann_items['EndNode']
                                    try:
                                        find_text = re.search('id="' + start + '" />(.+?)<Node', xml_string).group(1)
                                        pol_list.append((find_text.strip().lower(), value.text))
                                    except Exception as e:
-                                       #print(e)
                                        count_errors += 1
-                                       #print(count_errors)
                                elif name.text == 'attitude-type':
                                    start = ann_items['StartNode']
-                                   #end = ann_items['EndNode']
                                    try:
                                        find_text = re.search('id="' + start + '" />(.+?)<Node', xml_string).group(1)
                                        sent_list.append((find_text.strip().lower(), value.text))
@@ -65,7 +61,6 @@ class extract_MPQA:
                                    
         
             except Exception as e:
-                #print(str(e) + " " + str(count))
                 continue
         return pol_list, sent_list
         

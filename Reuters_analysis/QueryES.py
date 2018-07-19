@@ -25,8 +25,3 @@ class QueryES:
         }
         hits = es.search(index='articles', doc_type='article', body=query)
         return hits['hits']['hits']
-
-    
-
-
-#print(QueryES.query())

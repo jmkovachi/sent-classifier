@@ -6,7 +6,6 @@ Created on Sun Feb  4 23:39:36 2018
 @author: jmkovachi
 """
 
-#from classifiers.read_movie_reviews import read_Movies as movie_reader
 import nltk
 import random
 import traceback

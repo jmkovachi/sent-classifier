@@ -30,23 +30,11 @@ class MaxEnt:
         normalizing_param["**k+1**"] = 1
         
         count = 0
-        """for key, feature in features_i.items():
-                features_i[key] = {}
-                print(str(len(feature_set)) + " : " + str(count))
-                count += 1
-                for cl in class_set:
-                    features_i[key][cl] = MaxEnt.count(feature, document_set, cl)"""
-                    
-                
-            
-        # Counting all features to generate E~pFi
-        # Epfi = 1/N * sum of feature counts for all docs in training set
+           
         c = 0
         for feature in feature_set:
             count = 0
-           # print(str(c) + ' : ' + str(len(feature_set)))
             c += 1
-            #print(c)
             for doc in document_set: 
                 if feature in doc[0]:
                     count += 1
@@ -86,7 +74,6 @@ class MaxEnt:
                     for feature in feature_set:
                         
                         feature_weight = 1 if feature in doc[0] and key == document_set[i][1] else 0
-                        #print(feature_weight)
                         document_set[i][2][key] *= (normalizing_param[feature] ** feature_weight)
 
                              
@@ -110,7 +97,6 @@ class MaxEnt:
     def count(feature, doc_set, cl):
         count = 0
         for index in range(0,doc_set):
-            #print(doc)
             count = count + 1 if doc_set[index][1] == cl and feature in doc_set[index] else count
                 
         return count
@@ -135,7 +121,6 @@ class MaxEnt:
         classes = ['positive', 'negative']
         for cl in classes:
             for index in range(0,len(document_set)):
-                #print(sumVal)
                 sumVal += document_set[index][2][cl] * (1 if feature in document_set[index][0] and document_set[index][1] == cl else 0)
         return sumVal
     
@@ -150,7 +135,6 @@ class MaxEnt:
                     
                     
 feature_list, document_list = movie_reader.read_dir('/home/jmkovachi/sent-classifier/movie_reviews/txt_sentoken/')
-
 print(feature_list)
 normalizing_param = MaxEnt.train(feature_list, document_list, ('positive', 'negative'))
 

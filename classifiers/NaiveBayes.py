@@ -73,12 +73,9 @@ class MN_NaiveBayes:
         wordnet_lemmatizer = WordNetLemmatizer()
         
         document = [wordnet_lemmatizer.lemmatize(x) for x in document.split(" ")]
-        #print(document)
         if POS:
             document = nltk.pos_tag(document)
-            #print(document)
             document = [str(word[0] + '-' + word[1]) for word in document]
-            #document = [str(nltk.pos_tag(word)[0][1] + '-' + nltk.pos_tag(word)[1]) for word in document]
         
         pos_val = self.priorLogPos
         neg_val = self.priorLogNeg
@@ -94,13 +91,13 @@ class MN_NaiveBayes:
                 for word in document:
                     if word in self.features['posFeatures']:
                         pos_val += self.features['posFeatures'][word]
-                    elif word in self.features['negFeatures']: # or self.features['neutralFeatures']:
+                    elif word in self.features['negFeatures']:
                         pos_val += smooth_pos
             elif feature == 'negFeatures':
                 for word in document:
                     if word in self.features['negFeatures']:
                         neg_val += self.features['negFeatures'][word]
-                    elif word in self.features['posFeatures']: # or self.features['neutralFeatures']:
+                    elif word in self.features['posFeatures']: 
                         neg_val += smooth_neg
             """elif feature == 'neutralFeatures':
                 for word in document:
@@ -110,12 +107,10 @@ class MN_NaiveBayes:
                         neutral_val += smooth_neutral"""
         
         
-        if pos_val > neg_val: # and pos_val > neutral_val:
+        if pos_val > neg_val:
             return ('positive', pos_val)
-        elif neg_val > pos_val: # and neg_val > neutral_val:
+        elif neg_val > pos_val: 
             return ('negative', neg_val)
-        #elif neutral_val > pos_val and neutral_val > neg_val:
-            #return ('neutral', neutral_val)
         else:
             self.tie_count += 1
             return ('positive', pos_val)
@@ -224,7 +219,6 @@ class MN_NaiveBayes:
     def count_POS(words):
         cnt_pos = Counter()
         cnt_neg = Counter()
-        #print(words)
         pos = [str(word[0][0] + '-' + word[0][1]) for word in words if word[1] == 'positive']
         
         neg = [str(word[0][0] + '-' + word[0][1]) for word in words if word[1] == 'negative']
@@ -241,26 +235,10 @@ class MN_NaiveBayes:
         
                   
 mpqa = MPQA()
-
-
-#pol_list, sent_list, pos_test_docs, neg_test_docs = movie_reader.read_for_bayes('/home/jmkovachi/sent-classifier/movie_reviews/txt_sentoken/')
-
-
-
-#pos, neg = mpqa.build_counts(pol_list, sent_list)
-
 words, pos_test_docs, neg_test_docs = movie_reader.tag_dir('/home/jmkovachi/sent-classifier/movie_reviews/txt_sentoken/')
-
-#print(words)
-
-pos, neg = MN_NaiveBayes.count_POS(words)
-
+pos, neg = MN_NaiveBayes.count_POS(words)\
 NB = MN_NaiveBayes(pos, neg)
-
 NB.train()
-
-
-# The first couple parameters below are irrelevant
 NB.eval("irrelevant", NB, text='', newspaper=False, pos_test_docs=pos_test_docs, neg_test_docs=neg_test_docs, POS=True)
 
 print(NB.tie_count)

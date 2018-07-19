@@ -19,8 +19,6 @@ class read_Movies:
         
         doc_list = []
         
-        #base_dir = '/home/jmkovachi/sent-classifier/movie_reviews/txt_sentoken/'
-        
         stops = set(stopwords.words('english'))
         print(stops)
         for pos in os.listdir(base_dir + 'pos'):
